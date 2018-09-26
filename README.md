@@ -1,6 +1,12 @@
 # OCR
 EPITA - S3 - API - Project
 
+## Usage
+1. Clone this repository : `git clone git@github.com:4pm/OCR.git`
+2. Go to the OCR folder : `cd OCR`
+3. Compile the project : `make`
+4. Run the program : `./OCR`
+
 ## Subject
 Build an O.C.R software (Optical Character Recognition)
 Main function : extract text from a bitmap image
@@ -20,11 +26,17 @@ Dataflow
 
 
 ## LINKS
-http://neuralnetworksanddeeplearning.com
-keywords : supervised machine learning, multi-layer perceptron, retropropagation, gradient optimization, MLP with single hidden layer
+* http://www.debug-pro.com/epita/prog/s3/index.html
+* http://neuralnetworksanddeeplearning.com
+* https://wiki-prog.infoprepa.epita.fr/index.php/Practical:GIT
+* https://slashvar.github.io/2017/02/13/using-gnu-make.html
+* https://wiki-prog.infoprepa.epita.fr/index.php/Programmation:C
+
+## Keywords
+supervised machine learning, multi-layer perceptron, retropropagation, gradient optimization, MLP with single hidden layer
 
 
-## Notes
+## random notes
 C99 standard
 Compiler : gcc or clang
 
