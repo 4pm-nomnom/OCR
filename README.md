@@ -2,7 +2,7 @@
 EPITA - S3 - API - Project
 
 ## Usage
-1. Clone this repository : `git clone git@github.com:4pm/OCR.git`
+1. Clone this repository : `git clone git@github.com:4pm-nomnom/OCR.git`
 2. Go to the OCR folder : `cd OCR`
 3. Compile the project : `make`
 4. Run the program : `./OCR`
