@@ -31,6 +31,7 @@ Dataflow
 * https://wiki-prog.infoprepa.epita.fr/index.php/Practical:GIT
 * https://slashvar.github.io/2017/02/13/using-gnu-make.html
 * https://wiki-prog.infoprepa.epita.fr/index.php/Programmation:C
+* https://www.overleaf.com/project/5bb0ab986cab045a84059e05
 
 ## Keywords
 supervised machine learning, multi-layer perceptron, retropropagation, gradient optimization, MLP with single hidden layer
