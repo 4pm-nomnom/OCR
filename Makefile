@@ -10,7 +10,7 @@ CFLAGS = -Wall -Wextra -Werror -std=c99 #-O3
 # Linker options
 LDFLAGS =
 # libs and path for linker
-LDLIBS =
+LDLIBS = `pkg-config --libs sdl` -lSDL image 
 
 SRC = ocr.c
 OBJ = ${SRC:.c=.o}
