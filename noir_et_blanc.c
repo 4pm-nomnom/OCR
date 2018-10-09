@@ -3,7 +3,7 @@
 #include "SDL/SDL.h"
 
 
-SDL_Surface* picture = NULL; 
+SDL_Surface* picture; 
 Uint32 pixel;
 Uint8 *r, *g, *b;
 
@@ -11,6 +11,7 @@ SDL_Surface* picture_grey(SDL_Surface* picture);
 
 int main()
 {		
+	picture = malloc(sizeof(SDL_Surface));
 	picture = SDL_LoadBMP("test.bmp");
 	picture = picture_grey(picture);
 	SDL_SaveBMP(picture, "test_grey");
