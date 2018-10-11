@@ -20,10 +20,15 @@ int main(int argc, char *argv[])
     * This step convert an image (png/jpg/bmp...) to a matrix.  *
     *************************************************************/
     //--- Load image --------------------------------------------
+    char img_path[] = "hey.bmp";
+    int img_width, img_height;
+    //load_image(&img_SDL, img_path, &img_width, &img_height);
     
+    //--- Convert image to a matrix (grey scale) ----------------
+    //convert_to_matrix(img_SDL, img_matrix)
     
-    //--- Convert image to a matrix (grey scale)-----------------
-    
+    //--- Possibility to save an image --------------------------
+    //save_image_as(img_matrix, creation_path)
     
     /************************************************************
     *                   Image Pre-processing                    *
@@ -31,16 +36,16 @@ int main(int argc, char *argv[])
     * recognition easier.                                       *
     *************************************************************/
     //--- convert color of the matrix from grey-scale to 0 or 1 -
-    // binarisation(matrix) //! threshold depending on the image
+    // binarisation(img_matrix) //!\ threshold depending on the image
     
     //--- rotate the image if needed (De-skew) ------------------
-    // automatic_rotation(matrix)
+    // automatic_rotation(img_matrix);
     
     //--- remove positive and negative spots (Despeckle) --------
-    // noise_reduction()
+    // noise_reduction(img_matrix);
     
     //--- line removal - cleans up non-glyph lines/boxes --------
-    
+    // lines_removal(img_matrix);
     
     /************************************************************
     *                   Character Detection                     *
@@ -48,6 +53,7 @@ int main(int argc, char *argv[])
     * the segmentation of blocks/lines/words/characters.        *
     *************************************************************/
     //--- Characters segmentation -------------------------------
+    
     
     //--- Normalise characters (aspect ratio / scale) -----------
     
@@ -57,12 +63,21 @@ int main(int argc, char *argv[])
     * Convert the input matrix (representing a character) to an *
     * ASCII                                                     *
     *************************************************************/
-    //__init__ // when init the network, random value instead of nothing 
+    //--- possibility to initialize a neural network ------------
+    // neural_network_init(...)
+    // when init the network, use random value instead of nothing
+    // neural_network_from_source(source ...)
     
+    //--- possibility to train the neural network ---------------
+    // training(input, wanting_output)
+    
+    //--- get the estimated output for a specific input ---------
+    // get_result(input_character)
     
     /************************************************************
     *                     Post-processing                       *
-    * Possible checking of the words by using a dictionnary     *
+    * Possible checking of the words by using a dictionnary or  *
+    * a lexicon - a list of words that are allowed to occur     *
     *************************************************************/
     
     
