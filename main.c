@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[])
 {
-    printf("Hello World! The OCR is strating\n");
+    printf("Hello World! The OCR is starting\n");
     
     /************************************************************
     *                      Image Loading                        *
