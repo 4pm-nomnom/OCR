@@ -1,6 +1,6 @@
 #ifndef XORFUN_H
 #define	XORFUN_H
 
-char xorfun();
+float xorfun(float a, float b);
 
 #endif
