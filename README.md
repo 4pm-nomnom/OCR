@@ -1,5 +1,10 @@
 # OCR
-EPITA - S3 - API - Project
+EPITA - S3 - API - O.C.R software by 4pm
+
+## Dependencies
+* libsdl-image1.2-dev
+* libsdl1.2-dev
+* libgtk2.0-dev
 
 ## Usage
 1. Clone this repository : `git clone https://username@github.com/4pm-nomnom/OCR.git`
@@ -7,7 +12,8 @@ EPITA - S3 - API - Project
 3. Compile the project : `make`
 4. Run the program : `./OCR`
 
-## Work on the project
+
+# Work on the project
 1. Go to the OCR folder : `cd OCR`
 2. update your local version : `git pull`
 3. Go to your branch : `git checkout branch-name`
@@ -26,7 +32,7 @@ Main function : extract text from a bitmap image
 Input : Image 
 Output : Text
 
-Dataflow 
+## Dataflow 
 1. Image loading 
 2. Color removal (gray-scale, then back/white) 
 3. Pre-processing 
@@ -34,7 +40,6 @@ Dataflow
 5. Character detection 
 6. Identification of extracted characters 
 7. Text reconstruction 
-
 
 ## Links
 * http://www.debug-pro.com/epita/prog/s3/index.html
@@ -48,8 +53,7 @@ Dataflow
 supervised machine learning, multi-layer perceptron, retropropagation, gradient optimization, MLP with single hidden layer
 
 
-## Random notes
+## Notes
 C99 standard
 Compiler : gcc or clang
-
 XOR operator
