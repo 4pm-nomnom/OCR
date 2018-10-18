@@ -1,9 +1,9 @@
 #include <stdio.h>
-// #include <SDL2/SDL.h> // <SDL.h> ?
-// #include <SDL2/SDL_image.h>  // <SDL_image.h> ? // used to load the image
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
 // #include <gtk/gtk.h> // graphical user interfaces
 
-// #include "image_loading.h"
+#include "image.h"
 // #include "preprocessing.h"
 // #include "character_detection.h"
 // #include "character_recognition.h"
@@ -19,12 +19,20 @@ int main(int argc, char *argv[])
     *                      Image Loading                        *
     * This step convert an image (png/jpg/bmp...) to a matrix.  *
     *************************************************************/
+    //--- SDL initialisation ------------------------------------
+    SDL_Surface* image_surface;
+    SDL_Surface* screen_surface;
+    init_sdl();
+
     //--- Load image --------------------------------------------
-    char img_path[] = "hey.bmp";
-    int img_width, img_height;
-    //load_image(&img_SDL, img_path, &img_width, &img_height);
+    char img_path[] = "my_image.jpg";
+    image_surface = load_image(img_path);
+   
+    int img_width = image_surface->w;
+    int img_height = image_surface->h;
+
     
-    //--- Convert image to a matrix (grey scale) ----------------
+    //??? Convert image to a matrix (grey scale) ----------------
     //convert_to_matrix(img_SDL, img_matrix)
     
     //--- Possibility to save an image --------------------------
@@ -79,7 +87,13 @@ int main(int argc, char *argv[])
     * Possible checking of the words by using a dictionnary or  *
     * a lexicon - a list of words that are allowed to occur     *
     *************************************************************/
+   
+
+    // Free the image surface.
+    SDL_FreeSurface(image_surface);
     
-    
+    // Free the screen surface.
+    SDL_FreeSurface(screen_surface);
+ 
     return EXIT_SUCCESS;
 }
