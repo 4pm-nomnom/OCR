@@ -141,12 +141,13 @@ void update_surface(SDL_Surface* screen, SDL_Surface* image)
     SDL_UpdateRect(screen, 0, 0, image->w, image->h);
 }
 
+/*
 void save_image(SDL_Surface *image, const char *file)
 {
-    if (-1 == SDL_SaveBMP(SDL_Surface *image, const char *file))
+    if (-1 == SDL_SaveBMP(*image, *file))
     {
         printf("An error occured during the saving of the image : %s", file);
     }
     else
-        printf("Saved image : %s", file)
-}
+        printf("Saved image : %s", file);
+}*/
