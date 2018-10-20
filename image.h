@@ -2,7 +2,7 @@
 #define IMAGE_H
 
 #include <stdlib.h>
-#include <SDL.h>
+//#include <SDL.h>
 
 void init_sdl();
 SDL_Surface* load_image(char *path);
