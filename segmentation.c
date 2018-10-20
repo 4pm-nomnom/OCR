@@ -4,114 +4,67 @@
 #include "image.h"
 
 #define MAX_NUMBER_OF_LINES 100
+#define MAX_NUMBER_OF_CHARACTERS 200
+
+typedef struct
+{
+    size_t LeftBound;
+    size_t RightBound;
+    size_t *matrix; // = malloc(sizeof(size_t)*img_height*img_width);
+}Character;
 
 typedef struct
 {
     size_t UpperBound;
     size_t LowerBound;
+    size_t nbCharacters;
+    Character *Characters;
 }TextLine;
 
-void histogram_creation(size_t histogram[],
-        size_t binarized_image[],
-        size_t height, size_t width)
+
+size_t TextLines_ycut_find(TextLine textLines[],
+                            size_t binarized_image[],
+                            size_t height, size_t width)
 {
+    size_t nbTextLines=0;
+    int wasLine=0;
+    size_t startingPoint=0;
     for(size_t y=0; y < height; y++)
     {
-        size_t nbPixelInLine=0;
+        size_t nbPixelOnThisLine=0;
         for(size_t x=0; x < width; x++)
         {
-            nbPixelInLine += binarized_image[y+x*height];
+            nbPixelOnThisLine += binarized_image[y+x*height];
         }
-        histogram[y] = nbPixelInLine;
-    }
-}
-
-void histogram_show(size_t histogram[], size_t len)
-{
-    printf("--- showig histogram ---\n"); 
-    for(size_t i=0; i<len; i++)
-    {
-        printf("histogram[%zu] = %zu\n", i, histogram[i]);
-    }
-}
-
-size_t histogram_mean(size_t histogram[], size_t len)
-{
-    size_t sum = 0;
-    for(size_t i=0; i<len; i++)
-    {
-        sum += histogram[i];
-    }
-    return sum/len;
-}
-
-size_t TextLines_from_histogram(TextLine textLines[],
-        size_t histogram[], size_t len)
-{
-    size_t mean = histogram_mean(histogram, len);
-    size_t i=0, numTextLine=0;
-
-    int isMiddlePartOfLine = 0, isUpperPartOfLine = 0, isLowerPartOfLine = 0;
-    size_t upperBound;
-    if (histogram[0] != 0)
-    {
-        isUpperPartOfLine = 1;
-        upperBound = 0;
-    }
-
-    for(i=0; i < len; i++)
-    {
-        if (isUpperPartOfLine)
+        if (!wasLine && nbPixelOnThisLine)
         {
-            if (histogram[i] >= mean)
-            {
-                isUpperPartOfLine = 0;
-                isMiddlePartOfLine = 1;
-            }
+            startingPoint = y;
+            wasLine = 1;
             continue;
         }
-        if (isMiddlePartOfLine)
+        if (wasLine && !nbPixelOnThisLine)
         {
-            if (histogram[i] <= mean)
-            {
-                isMiddlePartOfLine = 0;
-                isLowerPartOfLine = 1;
-            }
-            continue;    
-        }
-        if (isLowerPartOfLine)
-        {
-            if (histogram[i] == 0)
-            {
-                isLowerPartOfLine = 0;
-                // add line coord to TextLines list
-                TextLine line; 
-                line.UpperBound = upperBound;
-                line.LowerBound = i;
-                textLines[numTextLine] = line;
-                numTextLine ++;
-            }
-            continue;
-        }
-        //searching for upperBound of a new line
-        if (histogram[i] != 0)
-        {
-            upperBound = i;
-            isUpperPartOfLine = 1;
+            TextLine line; 
+            line.UpperBound = startingPoint;
+            line.LowerBound = y;
+            textLines[nbTextLines] = line;
+            wasLine = 0;
+            nbTextLines ++;
         }
     }
+
     // check if the last line was finished
-    if (isUpperPartOfLine || isMiddlePartOfLine || isLowerPartOfLine)
+    if (wasLine)
     {
         // add line coord to TextLines list
         TextLine line; 
-        line.UpperBound = upperBound;
-        line.LowerBound = i-1;
-        textLines[numTextLine] = line;
-        numTextLine ++;
+        line.UpperBound = startingPoint;
+        line.LowerBound = height-1;
+        textLines[nbTextLines] = line;
+        nbTextLines ++;
     }
 
-    return numTextLine;
+    return nbTextLines;
 }
 
 void TextLines_show(TextLine textLines[], size_t nbTextLines)
@@ -124,30 +77,88 @@ void TextLines_show(TextLine textLines[], size_t nbTextLines)
     }
 }
 
-void Surface_draw_line(SDL_Surface *image_surface, size_t numLine)
+size_t Characters_find_quick_bounds(TextLine textLine,
+        size_t binarized_image[],
+        size_t img_width,
+        size_t img_height)
 {
-    size_t width = image_surface->w;
-    for(size_t y=0; y < width; y++)
+    size_t upperBound = textLine.UpperBound;
+    size_t lowerBound = textLine.LowerBound;
+    size_t nbCharactersFound = 0;
+    int wasChar=0;
+    size_t startingPoint=0;
+    for(size_t x=0; x < img_width; x++)
+    {
+        size_t nbPixelOnThisLine = 0;
+        for(size_t y=upperBound; y<=lowerBound; y++)
+        {
+            nbPixelOnThisLine += binarized_image[y+x*img_height];
+        }
+        if (!wasChar && nbPixelOnThisLine)
+        {
+            startingPoint = x;
+            wasChar = 1;
+            continue;
+        }
+        if (wasChar && !nbPixelOnThisLine)
+        {
+            Character character;
+            character.LeftBound = startingPoint;
+            character.RightBound = x;
+            textLine.Characters[nbCharactersFound] = character;
+            wasChar = 0;
+            nbCharactersFound++;
+        }
+    }
+    return nbCharactersFound;
+}
+
+void Surface_draw_vline(SDL_Surface *image_surface, size_t numCol,
+                        size_t upperBound, size_t lowerBound)
+{
+    for(size_t y=upperBound; y < lowerBound; y++)
     {
         Uint8 r=255, g=0, b=0;
         Uint32 pixel = SDL_MapRGB(image_surface->format, r, g, b);
-        put_pixel(image_surface, y, numLine, pixel);
+        put_pixel(image_surface, numCol, y, pixel);
+    }
+}
+
+void Surface_draw_hline(SDL_Surface *image_surface, size_t numLine)
+{
+    size_t width = image_surface->w;
+    for(size_t x=0; x < width; x++)
+    {
+        Uint8 r=0, g=255, b=0;
+        Uint32 pixel = SDL_MapRGB(image_surface->format, r, g, b);
+        put_pixel(image_surface, x, numLine, pixel);
     }
 }
 
 void Surface_draw_textLines(SDL_Surface *image_surface,
-        TextLine textLines[], size_t nbTextLines)
+                            TextLine textLines[], size_t nbTextLines)
 {
     for(size_t i=0; i < nbTextLines; i++)
     {
-        Surface_draw_line(image_surface, textLines[i].UpperBound);
-        Surface_draw_line(image_surface, textLines[i].LowerBound);
+        size_t upperBound = textLines[i].UpperBound;
+        size_t lowerBound = textLines[i].LowerBound; 
+        Surface_draw_hline(image_surface, upperBound);
+        Surface_draw_hline(image_surface, lowerBound);
+        
+        for(size_t j=0; j<textLines[i].nbCharacters; j++)
+        {
+            Character character = textLines[i].Characters[j];
+            Surface_draw_vline(image_surface, character.LeftBound,
+                                upperBound, lowerBound);
+            Surface_draw_vline(image_surface, character.RightBound,
+                                upperBound, lowerBound);
+        }
     }
 }
 
 int main()
 {
-    printf("Hello World! The OCR is starting\n");
+    printf("Hello World! The OCR segmentation is starting\n");
 
     /************************************************************
      *                      Image Loading                        *
@@ -159,11 +170,12 @@ int main()
     init_sdl();
 
     //--- Load image --------------------------------------------
-    char img_path[] = "hey.png";
+    char img_path[] = "samples/lines.png";
     image_surface = load_image(img_path);
 
     size_t img_width = image_surface->w ;
     size_t img_height = image_surface->h ;
+    printf("[%s] was loaded\n", img_path);
     printf("width = %zu // height = %zu\n", img_width, img_height);
 
     screen_surface = display_image(image_surface);
@@ -188,21 +200,27 @@ int main()
         //printf("\n");
     }
 
-    //--- Histogram ---------------------------------------------
-    size_t *histogram_lines = calloc(img_height, sizeof(size_t));
-    printf("--- starting histogram creation ---\n");
-    histogram_creation(histogram_lines, img_bin_matrix,
-            img_height, img_width);
-    histogram_show(histogram_lines, img_height);
-
-    size_t mean = histogram_mean(histogram_lines, img_height);
-    printf("mean = %zu\n", mean);
-
     //--- Get Lines ---------------------------------------------
     TextLine *textLines = calloc(MAX_NUMBER_OF_LINES, sizeof(TextLine));
-    size_t nbTextLines = TextLines_from_histogram(textLines,
-            histogram_lines, img_height);
+    size_t nbTextLines = TextLines_ycut_find(textLines,
+                                                    img_bin_matrix,
+                                                    img_height,
+                                                    img_width);
     TextLines_show(textLines, nbTextLines);
+
+    //--- Get Characters ----------------------------------------
+    for(size_t i=0; i < nbTextLines; i++)
+    {
+        Character *characters;
+        characters = calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
+        textLines[i].Characters = characters;
+
+        textLines[i].nbCharacters = Characters_find_quick_bounds(textLines[i],
+                                                                img_bin_matrix,
+                                                                img_width,
+                                                                img_height);
+        printf("nbCharacters detected : %zu\n", textLines[i].nbCharacters);
+    }
 
     Surface_draw_textLines(image_surface, textLines, nbTextLines);
     update_surface(screen_surface, image_surface); 
@@ -210,12 +228,14 @@ int main()
     wait_for_keypressed();
 
     //--- Free memory -------------------------------------------
-    free(histogram_lines); 
     free(img_bin_matrix);
-    // Free the image surface.
-    SDL_FreeSurface(image_surface);
-    // Free the screen surface.
-    SDL_FreeSurface(screen_surface);
+    for(size_t i=0; i<nbTextLines; i++)
+    {
+        free(textLines[i].Characters);
+    }
+    free(textLines);
+    SDL_FreeSurface(image_surface); 
+    SDL_FreeSurface(screen_surface); 
 
     return 0;
 }
