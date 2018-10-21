@@ -42,7 +42,7 @@ size_t TextLines_ycut_find(TextLine textLines[],
         }
         if (wasLine && !nbPixelOnThisLine)
         {
-            TextLine line; 
+            TextLine line;
             line.UpperBound = startingPoint;
             line.LowerBound = y;
             textLines[nbTextLines] = line;
@@ -55,7 +55,7 @@ size_t TextLines_ycut_find(TextLine textLines[],
     if (wasLine)
     {
         // add line coord to TextLines list
-        TextLine line; 
+        TextLine line;
         line.UpperBound = startingPoint;
         line.LowerBound = height-1;
         textLines[nbTextLines] = line;
@@ -139,10 +139,10 @@ void Surface_draw_textLines(SDL_Surface *image_surface,
     for(size_t i=0; i < nbTextLines; i++)
     {
         size_t upperBound = textLines[i].UpperBound;
-        size_t lowerBound = textLines[i].LowerBound; 
+        size_t lowerBound = textLines[i].LowerBound;
         Surface_draw_hline(image_surface, upperBound);
         Surface_draw_hline(image_surface, lowerBound);
-        
+
         for(size_t j=0; j<textLines[i].nbCharacters; j++)
         {
             Character character = textLines[i].Characters[j];
@@ -158,7 +158,7 @@ int main()
 {
     printf("Hello World! The OCR segmentation is starting\n");
 
-    //                      Image Loading                      
+    //                      Image Loading
     //--- SDL initialisation ------------------------------------
     SDL_Surface* image_surface;
     SDL_Surface* screen_surface;
@@ -216,7 +216,7 @@ int main()
     }
 
     Surface_draw_textLines(image_surface, textLines, nbTextLines);
-    update_surface(screen_surface, image_surface); 
+    update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
 
@@ -227,8 +227,8 @@ int main()
         free(textLines[i].Characters);
     }
     free(textLines);
-    SDL_FreeSurface(image_surface); 
-    SDL_FreeSurface(screen_surface); 
+    SDL_FreeSurface(image_surface);
+    SDL_FreeSurface(screen_surface);
 
     return 0;
 }*/

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     strcpy(imgPath, argv[1]);
 
     printf("==== Hello World! The OCR is starting ====\n");
-    
+
     /************************************************************
     *                      Image Loading                        *
     * This step convert an image (png/jpg/bmp...) to a matrix.  *
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     image_surface = load_image(imgPath);
     size_t img_width = image_surface->w;
     size_t img_height = image_surface->h;
-    
+
     printf("[%s] has been loaded",imgPath);
     printf("(width = %zu | height = %zu)\n", img_width, img_height);
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
-   
+
     //--- Binarization ------------------------------------------
     printf("--- Binarization using otsu method ---\n");
     size_t otsuThreshold = otsu_threshold(image_surface);
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
-    
+
     //--- Reverse Binarization if text is white -----------------
     printf("--- Reverse Binarization if text is white ---\n");
     binarize_text_as_black(image_surface);
@@ -77,16 +77,16 @@ int main(int argc, char *argv[])
     update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
-    
+
     //--- rotate the image if needed (De-skew) ------------------
     // automatic_rotation(img_matrix);
-    
+
     //--- remove positive and negative spots (Despeckle) --------
     // noise_reduction(img_matrix);
-    
+
     //--- line removal - cleans up non-glyph lines/boxes --------
     // lines_removal(img_matrix);
-    
+
     /************************************************************
     *                   Character Detection                     *
     * In this section the layout will be analysed. This means   *
@@ -130,16 +130,16 @@ int main(int argc, char *argv[])
         printf("Line[%zu] -> nbCharacters detected : %zu\n",
                 i, textLines[i].nbCharacters);
     }
-    
+
     Surface_draw_textLines(image_surface, textLines, nbTextLines);
 
-    update_surface(screen_surface, image_surface); 
+    update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
-    
+
     //--- Normalise characters (aspect ratio / scale) -----------
-    
-    
+
+
     /************************************************************
     *                  Character Recognition                    *
     * Convert the input matrix (representing a character) to an *
@@ -149,13 +149,13 @@ int main(int argc, char *argv[])
     // neural_network_init(...)
     // when init the network, use random value instead of nothing
     // neural_network_from_source(source ...)
-    
+
     //--- possibility to train the neural network ---------------
     // training(input, wanting_output)
-    
+
     //--- get the estimated output for a specific input ---------
     // get_result(input_character)
-    
+
     /************************************************************
     *                     Post-processing                       *
     * Possible checking of the words by using a dictionnary or  *
@@ -165,8 +165,8 @@ int main(int argc, char *argv[])
     /************************************************************
     *                        Free Memory                        *
     *************************************************************/
-    
-    //characters 
+
+    //characters
     free(img_bin_matrix);
     for(size_t i=0; i<nbTextLines; i++)
     {
@@ -177,9 +177,9 @@ int main(int argc, char *argv[])
 
     // Free the image surface.
     SDL_FreeSurface(image_surface);
-    
+
     // Free the screen surface.
     SDL_FreeSurface(screen_surface);
- 
+
     return EXIT_SUCCESS;
 }

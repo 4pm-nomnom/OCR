@@ -109,7 +109,7 @@ void binarize_text_as_black(SDL_Surface *image_surface)
         SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
         size_t color = r;
         if (color == 0)
-            nbBlack++;        
+            nbBlack++;
     }
     if (nbBlack >= width-nbBlack)
     {
@@ -153,7 +153,7 @@ int main()
 
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
-    
+
     grayscale(image_surface);
 
     update_surface(screen_surface, image_surface);
@@ -174,8 +174,8 @@ int main()
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
     //--- Free memory -------------------------------------------
-    SDL_FreeSurface(image_surface); 
-    SDL_FreeSurface(screen_surface); 
+    SDL_FreeSurface(image_surface);
+    SDL_FreeSurface(screen_surface);
 
     return 0;
 }*/

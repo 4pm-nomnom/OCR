@@ -16,13 +16,13 @@ EPITA - S3 - API - O.C.R software by 4pm
 * Input : Image
 * Output : Text
 
-## Dataflow 
-1. Image loading 
-2. Color removal (gray-scale, then back/white) 
-3. Pre-processing 
-4. Text block detection 
-5. Character detection 
-6. Identification of extracted characters 
+## Dataflow
+1. Image loading
+2. Color removal (gray-scale, then back/white)
+3. Pre-processing
+4. Text block detection
+5. Character detection
+6. Identification of extracted characters
 7. Text reconstruction
 
 # Work on the project
