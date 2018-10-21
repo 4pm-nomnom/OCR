@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
+// #include "SDL/SDL.h" //included in image.h
+// #include "SDL/SDL_image.h" //included in image.h
 // #include <gtk/gtk.h> // graphical user interfaces
 
 #include "image.h"

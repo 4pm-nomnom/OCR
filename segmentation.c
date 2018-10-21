@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
 #include "image.h"
 
 #define MAX_NUMBER_OF_LINES 100
