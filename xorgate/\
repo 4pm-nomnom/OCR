@@ -27,7 +27,7 @@ float xorfun(float a, float b)
 
 }
 
-float speand1(float a, float b)
+float speand1(x1, x2)
 {
 	if (a == 0)
 	{
@@ -37,11 +37,10 @@ float speand1(float a, float b)
 			return 1.0f;
 		}	
 		// a = b =0
-	}
 		return 0.0f;
 }
 
-float speand2(float a, float b)
+float speand2(x1, x2)
 {
 	if (a != 0)
 	{
@@ -51,7 +50,5 @@ float speand2(float a, float b)
 			return 1.0f;
 		}	
 		// a = b =0
-	}
-	return 0.0f;
-
+		return 0.0f;
 }
