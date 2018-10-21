@@ -1,6 +1,6 @@
 #include <err.h>
 #include <stdlib.h>
-//#include <SDL.h>
+#include <SDL.h>
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 
@@ -141,13 +141,8 @@ void update_surface(SDL_Surface* screen, SDL_Surface* image)
     SDL_UpdateRect(screen, 0, 0, image->w, image->h);
 }
 
-/*
-void save_image(SDL_Surface *image, const char *file)
+void Save_image(SDL_Surface* image, char* name)
 {
-    if (-1 == SDL_SaveBMP(*image, *file))
-    {
-        printf("An error occured during the saving of the image : %s", file);
-    }
-    else
-        printf("Saved image : %s", file);
-}*/
+    if((SDL_SaveBMP(image, name)) != 0)
+        exit(EXIT_FAILURE);
+}

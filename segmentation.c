@@ -153,15 +153,12 @@ void Surface_draw_textLines(SDL_Surface *image_surface,
         }
     }
 }
-
+/*
 int main()
 {
     printf("Hello World! The OCR segmentation is starting\n");
 
-    /************************************************************
-     *                      Image Loading                        *
-     * This step convert an image (png/jpg/bmp...) to a matrix.  *
-     *************************************************************/
+    //                      Image Loading                      
     //--- SDL initialisation ------------------------------------
     SDL_Surface* image_surface;
     SDL_Surface* screen_surface;
@@ -179,9 +176,7 @@ int main()
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
 
-    /************************************************************
      *                      Segmentation                         *
-     *************************************************************/
     //--- Binarisation ------------------------------------------
     size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
     for(size_t y=0; y<img_height; y++)
@@ -236,4 +231,4 @@ int main()
     SDL_FreeSurface(screen_surface); 
 
     return 0;
-}
+}*/

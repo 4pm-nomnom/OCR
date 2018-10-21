@@ -133,7 +133,7 @@ void binarize_text_as_black(SDL_Surface *image_surface)
     }
 }
 
-
+/*
 int main()
 {
     //--- SDL initialisation ------------------------------------
@@ -178,4 +178,4 @@ int main()
     SDL_FreeSurface(screen_surface); 
 
     return 0;
-}
+}*/

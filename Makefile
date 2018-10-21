@@ -12,14 +12,15 @@ LDFLAGS =
 # libs and path for linker
 LDLIBS= `pkg-config --libs sdl` -lSDL_image
 
-SRC = ocr.c image.c segmentation.c preprocessing.c
+SRC = main.c image.c segmentation.c preprocessing.c
 OBJ = ${SRC:.c=.o}
 DEP = ${SRC:.c=.d}
 PGR = ${SRC:.c=}
 
-all: ocr
+all: main
 
-ocr: ${OBJ}
+main: ${OBJ}
+main.o: image.h preprocessing.h segmentation.h
 
 segmentation: image.o segmentation.o
 segmentation.o: image.h
