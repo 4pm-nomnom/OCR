@@ -6,26 +6,26 @@ CPPFLAGS= `pkg-config --cflags sdl` -MMD
 # Setting the compiler and the default linker program
 CC = gcc
 # Main compilation options
-CFLAGS = -Wall -Wextra -Werror -std=c99 -O3 -lm
+CFLAGS = -Wall -Wextra -Werror -std=c99 -O3
 # Linker options
 LDFLAGS =
 # libs and path for linker
-LDLIBS= `pkg-config --libs sdl` -lSDL_image
+LDLIBS= `pkg-config --libs sdl` -lm -lSDL_image
 
 SRC = main.c image.c segmentation.c preprocessing.c
 OBJ = ${SRC:.c=.o}
 DEP = ${SRC:.c=.d}
 PGR = ${SRC:.c=}
 XOR = xorgate/xor.c xorgate/xorfun.c xorgate/xorgate.c
-OBJXOR = ${XOR:.c=.o}
+XOROBJ = ${XOR:.c=.o}
 XORDEP = ${XOR:.c=.d}
 
-all: main xor
+all: main xorgate/xor
 
 main: ${OBJ}
 main.o: image.h preprocessing.h segmentation.h
 
-xor: ${OBJXOR}
+xorgate/xor: ${XOROBJ}
 xorgate/xor.o: xorgate/xorfun.h xorgate/xorgate.h
 
 segmentation: image.o segmentation.o
@@ -39,8 +39,11 @@ preprocessing.o: image.h
 
 .PHONY: clean
 clean:
-	${RM} ${OBJ} ${OBJXOR} # remove object files
-	${RM} ${DEP} ${XORDEP} # remove dependency files
-	${RM} ${PGR} xor   # remove program file
+	# remove object files
+	${RM} ${OBJ} ${XOROBJ}
+	# remove dependency files
+	${RM} ${DEP} ${XORDEP}
+	# remove program file
+	${RM} ${PGR} xorgate/xor
 
 # END
