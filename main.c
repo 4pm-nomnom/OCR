@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 // #include "SDL/SDL.h" //included in image.h
 // #include "SDL/SDL_image.h" //included in image.h
 // #include <gtk/gtk.h> // graphical user interfaces
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
     if (argc < 2)
     {
         printf("You must provide an image file\n");
-        return 1;
+        return EXIT_FAILURE;
     }
     char *imgPath = calloc((strlen(argv[1])+1), sizeof(char));
     strcpy(imgPath, argv[1]);
@@ -41,9 +42,9 @@ int main(int argc, char *argv[])
     size_t img_width = image_surface->w;
     size_t img_height = image_surface->h;
 
-    printf("[%s] has been loaded",imgPath);
+    printf("[%s] has been loaded ",imgPath);
     printf("(width = %zu | height = %zu)\n", img_width, img_height);
-
+    
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
 

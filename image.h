@@ -17,6 +17,8 @@ void update_surface(SDL_Surface* screen, SDL_Surface* image);
 
 void Save_image(SDL_Surface* image, char* name);
 
+SDL_Surface *ScaleSurface(SDL_Surface *surface, size_t width, size_t height);
+
 /* SDL_FreeSurface(image_surface); to close
  * int width = image_surface->w;
  * int height = image_surface->h;
