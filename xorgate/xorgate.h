@@ -5,29 +5,29 @@
 
 typedef struct InputLayer
 {
-	NodeXorDouble Node1, Node2;
-	
+    NodeXorDouble Node1, Node2;
+
 } InputLayer;
 
 typedef struct HiddenLayer
 {
-	NodeXor Node1, Node2;
-	
+    NodeXor Node1, Node2;
+
 } HiddenLayer;
 
 typedef struct OutputLayer
 {
-	float res;
-	float bias;
-	
+    float res;
+    float bias;
+
 } OutputLayer;
 
 
 typedef struct NeuralXorNet
 {
-	InputLayer InputLayer;
-	HiddenLayer HiddenLayer;
-	OutputLayer OutputLayer;
+    InputLayer InputLayer;
+    HiddenLayer HiddenLayer;
+    OutputLayer OutputLayer;
 
 } NeuralXorNet;
 
