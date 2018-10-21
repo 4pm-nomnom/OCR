@@ -4,47 +4,79 @@
 // #include <gtk/gtk.h> // graphical user interfaces
 
 #include "image.h"
-// #include "preprocessing.h"
-// #include "character_detection.h"
+#include "preprocessing.h"
+#include "segmentation.h"
 // #include "character_recognition.h"
 // #include "postprocessing.h"
 // #include "graphical_interface.h"
 
+#define MAX_NUMBER_OF_LINES 100
+#define MAX_NUMBER_OF_CHARACTERS 200
 
 int main(int argc, char *argv[])
 {
-    printf("Hello World! The OCR is starting\n");
+    //--- get argv (img_path) -----------------------------------
+    if (argc < 2)
+    {
+        printf("You must provide an image file\n");
+        return 1;
+    }
+    char *imgPath = calloc((strlen(argv[1])+1), sizeof(char));
+    strcpy(imgPath, argv[1]);
+
+    printf("==== Hello World! The OCR is starting ====\n");
     
     /************************************************************
     *                      Image Loading                        *
     * This step convert an image (png/jpg/bmp...) to a matrix.  *
     *************************************************************/
+    printf("--- Image Loading ---\n");
     //--- SDL initialisation ------------------------------------
     SDL_Surface* image_surface;
     SDL_Surface* screen_surface;
     init_sdl();
 
     //--- Load image --------------------------------------------
-    char img_path[] = "my_image.jpg";
-    image_surface = load_image(img_path);
-   
-    int img_width = image_surface->w;
-    int img_height = image_surface->h;
+    image_surface = load_image(imgPath);
+    size_t img_width = image_surface->w;
+    size_t img_height = image_surface->h;
+    
+    printf("[%s] has been loaded",imgPath);
+    printf("(width = %zu | height = %zu)\n", img_width, img_height);
 
-    
-    //??? Convert image to a matrix (grey scale) ----------------
-    //convert_to_matrix(img_SDL, img_matrix)
-    
-    //--- Possibility to save an image --------------------------
-    //save_image_as(img_matrix, creation_path)
-    
+    screen_surface = display_image(image_surface);
+    wait_for_keypressed();
+
     /************************************************************
     *                   Image Pre-processing                    *
     * Process the image to make the character detection &       *
     * recognition easier.                                       *
     *************************************************************/
-    //--- convert color of the matrix from grey-scale to 0 or 1 -
-    // binarisation(img_matrix) //!\ threshold depending on the image
+    //--- grayscale ---------------------------------------------
+    printf("--- Turning the image from color to grayscale ---\n");
+    grayscale(image_surface);
+
+    update_surface(screen_surface, image_surface);
+    screen_surface = display_image(image_surface);
+    wait_for_keypressed();
+   
+    //--- Binarization ------------------------------------------
+    printf("--- Binarization using otsu method ---\n");
+    size_t otsuThreshold = otsu_threshold(image_surface);
+    printf("otsu Threshold: %zu\n",otsuThreshold);
+    binarize(image_surface, otsuThreshold);
+
+    update_surface(screen_surface, image_surface);
+    screen_surface = display_image(image_surface);
+    wait_for_keypressed();
+    
+    //--- Reverse Binarization if text is white -----------------
+    printf("--- Reverse Binarization if text is white ---\n");
+    binarize_text_as_black(image_surface);
+
+    update_surface(screen_surface, image_surface);
+    screen_surface = display_image(image_surface);
+    wait_for_keypressed();
     
     //--- rotate the image if needed (De-skew) ------------------
     // automatic_rotation(img_matrix);
@@ -60,8 +92,50 @@ int main(int argc, char *argv[])
     * In this section the layout will be analysed. This means   *
     * the segmentation of blocks/lines/words/characters.        *
     *************************************************************/
-    //--- Characters segmentation -------------------------------
+    //--- bin-matrix creation -----------------------------------
+    printf("--- text as a matrix ---\n");
+    size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
+    for(size_t y=0; y<img_height; y++)
+    {
+        for(size_t x=0; x<img_width; x++)
+        {
+            Uint32 pixel = get_pixel(image_surface, x, y);
+            Uint8 r, g, b;
+            SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
+            img_bin_matrix[y+x*img_height] = (r==0)?1:0;
+        }
+    }
+
+    //--- Get Lines ---------------------------------------------
+    printf("--- detecting lines ---\n");
+    TextLine *textLines = calloc(MAX_NUMBER_OF_LINES, sizeof(TextLine));
+    size_t nbTextLines = TextLines_ycut_find(textLines,
+                                                    img_bin_matrix,
+                                                    img_height,
+                                                    img_width);
+    TextLines_show(textLines, nbTextLines);
+
+    //--- Get Characters ----------------------------------------
+    printf("--- detecting characters ---\n");
+    for(size_t i=0; i < nbTextLines; i++)
+    {
+        Character *characters;
+        characters = calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
+        textLines[i].Characters = characters;
+
+        textLines[i].nbCharacters = Characters_find_quick_bounds(textLines[i],
+                                                                img_bin_matrix,
+                                                                img_width,
+                                                                img_height);
+        printf("Line[%zu] -> nbCharacters detected : %zu\n",
+                i, textLines[i].nbCharacters);
+    }
     
+    Surface_draw_textLines(image_surface, textLines, nbTextLines);
+
+    update_surface(screen_surface, image_surface); 
+    screen_surface = display_image(image_surface);
+    wait_for_keypressed();
     
     //--- Normalise characters (aspect ratio / scale) -----------
     
@@ -87,7 +161,19 @@ int main(int argc, char *argv[])
     * Possible checking of the words by using a dictionnary or  *
     * a lexicon - a list of words that are allowed to occur     *
     *************************************************************/
-   
+
+    /************************************************************
+    *                        Free Memory                        *
+    *************************************************************/
+    
+    //characters 
+    free(img_bin_matrix);
+    for(size_t i=0; i<nbTextLines; i++)
+    {
+        free(textLines[i].Characters);
+    }
+    //textlines
+    free(textLines);
 
     // Free the image surface.
     SDL_FreeSurface(image_surface);
