@@ -6,6 +6,14 @@
 
 
 
+
+
+
+
+//If the NeuralNetwork is initialized with proper values, 
+// Behaves like a XOR gate
+//Else, behaves like a OR gate
+
 //compute the sum of product with the bias
 float ff(HiddenLayer H, OutputLayer O)
 {
@@ -141,8 +149,14 @@ float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2)
 //sigmoid' = output - outputpower2
 	float out = sigmoid * (1 - sigmoid);
 //custom output value, valid in this specific case
-	float res = ( yx  + a ) * out;
-	return res;
+//couldnt handle the case were x1 and  x2 were greater than zero without using
+//some vectors and arrays. Thus, for the moment I cover it separately
+	float res = ((-1.0f) * (yx) + a ) * out;
+	if (x1 == x2 && x2!=0.0f)
+	{
+		res = (-1.0f) * res;
+	}
+	return res;	
 }
 
 
@@ -164,8 +178,14 @@ float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
 //sigmoid' = output - outputpower2
 	float out = sigmoid * (1 - sigmoid);
 //custom output value, valid in this specific case
-	float res = (yx + a ) * out;
-	return res;
+//couldnt handle the case were x1 and  x2 were greater than zero without using
+//some vectors and arrays. Thus, for the moment I cover it separately
+	float res = ((-1.0f) * (yx) + a ) * out;
+	if (x1 == x2 && x2!=0.0f)
+	{
+		res = (-1.0f) * res;
+	}
+	return res;	
 }
 
 
@@ -185,7 +205,13 @@ float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
 //sigmoid' = output - outputpower2
 	float out = sigmoid * (1 - sigmoid);
 //custom output value, valid in this specific case
-	float res =  (yx + a ) * out;
+//couldnt handle the case were x1 and  x2 were greater than zero without using
+//some vectors and arrays. Thus, for the moment I cover it separately
+	float res = ((-1.0f) * (yx) + a ) * out;
+	if (x1 == x2 && x2!=0.0f)
+	{
+		res = (-1.0f) * res;
+	}
 	return res;
 }
 
@@ -195,7 +221,6 @@ float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
 HiddenLayer stcout(HiddenLayer H, OutputLayer O, float rate, float x1, float x2)
 {
 	float er = operroro(H, O, x1, x2);	
-	//The learning rate we use - to modify for tests.
 	H.Node1.weight = H.Node1.weight - rate * er;
 	H.Node2.weight = H.Node2.weight - rate * er;
 	H.Node1.bias = H.Node1.bias - rate * er;
@@ -209,7 +234,6 @@ InputLayer stchid(InputLayer I, HiddenLayer H, float rate, float x1, float x2)
 {	
 	float er1 = operrorh1(I, H, x1, x2);
 	float er2 = operrorh2(I, H, x1, x2);
-	//The learning rate we use - to modify for tests.
 	I.Node1.weight1 = I.Node1.weight1 - rate * er1;
 	I.Node1.weight2 = I.Node1.weight2 - rate * er1;
 	I.Node2.weight1 = I.Node2.weight1 - rate * er2;
