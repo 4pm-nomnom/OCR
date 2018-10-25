@@ -6,11 +6,13 @@ EPITA - S3 - API - O.C.R software by 4pm
 * libsdl1.2-dev
 * libgtk2.0-dev
 
-## Usage
-1. Clone the repository : `git clone https://username@github.com/4pm-nomnom/OCR.git`
+## Usage (for the first defense)
+1. Clone the repository : `git clone https://github.com/4pm-nomnom/OCR.git`
 2. Go to the OCR folder : `cd OCR`
-3. Compile the project : `make`
-4. Run the program : `./OCR`
+3. Compile the project : `make all`
+4. Test image segmentation : `./main samples/light_on_orange.png`
+5. Test the xor implementation : `./xorgate/xor`
+6. clean the repository using : `make clean`
 
 ## Progam Specifications
 * Input : Image
@@ -45,7 +47,11 @@ EPITA - S3 - API - O.C.R software by 4pm
 * https://www.overleaf.com/read/yvqwvgtwzbyr
 
 ## Keywords
-supervised machine learning, multi-layer perceptron, retropropagation, gradient optimization, MLP with single hidden layer
+* supervised machine learning
+* multi-layer perceptron
+* retropropagation
+* gradient optimization
+* MLP with single hidden layer
 
 ## Notes
 * C99 standard

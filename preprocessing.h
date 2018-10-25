@@ -3,7 +3,7 @@
 
 void grayscale(SDL_Surface *image_surface);
 
-size_t otsu_threshold(SDL_Surface *image_surface); // on grayscale image_surface
+size_t otsu_threshold(SDL_Surface *image_surface); //on grayscale image_surface
 
 void binarize(SDL_Surface *image_surface, size_t threshold);
 

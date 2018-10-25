@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     printf("[%s] has been loaded ",imgPath);
     printf("(width = %zu | height = %zu)\n", img_width, img_height);
-    
+
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
 
