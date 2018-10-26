@@ -2,7 +2,7 @@
 #include <stdlib.h>
 // #include "SDL/SDL.h" //included in image.h
 // #include "SDL/SDL_image.h" //included in image.h
-// #include <gtk/gtk.h> // graphical user interfaces
+#include <gtk/gtk.h> // graphical user interfaces
 
 #include "image.h"
 #include "preprocessing.h"
@@ -14,8 +14,34 @@
 #define MAX_NUMBER_OF_LINES 100
 #define MAX_NUMBER_OF_CHARACTERS 200
 
+GtkWidget *g_lbl_hello;
+GtkWidget *g_lbl_count;
+
+
 int main(int argc, char *argv[])
 {
+    // --- GTK Window ------------------------------------------
+    GtkBuilder *builder;
+    GtkWidget *window;
+
+    gtk_init(&argc, &argv);
+
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
+
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+    gtk_builder_connect_signals(builder, NULL);
+
+    // get pointers to the two labels
+    g_lbl_hello = GTK_WIDGET(gtk_builder_get_object(builder, "lbl_hello"));
+    g_lbl_count = GTK_WIDGET(gtk_builder_get_object(builder, "lbl_count"));
+
+    g_object_unref(builder);
+
+    gtk_widget_show(window);
+    gtk_main();
+
+
     //--- get argv (img_path) -----------------------------------
     if (argc < 2)
     {
@@ -28,9 +54,9 @@ int main(int argc, char *argv[])
     printf("==== Hello World! The OCR is starting ====\n");
 
     /************************************************************
-    *                      Image Loading                        *
-    * This step convert an image (png/jpg/bmp...) to a matrix.  *
-    *************************************************************/
+     *                      Image Loading                        *
+     * This step convert an image (png/jpg/bmp...) to a matrix.  *
+     *************************************************************/
     printf("--- Image Loading ---\n");
     //--- SDL initialisation ------------------------------------
     SDL_Surface* image_surface;
@@ -49,10 +75,10 @@ int main(int argc, char *argv[])
     wait_for_keypressed();
 
     /************************************************************
-    *                   Image Pre-processing                    *
-    * Process the image to make the character detection &       *
-    * recognition easier.                                       *
-    *************************************************************/
+     *                   Image Pre-processing                    *
+     * Process the image to make the character detection &       *
+     * recognition easier.                                       *
+     *************************************************************/
     //--- grayscale ---------------------------------------------
     printf("--- Turning the image from color to grayscale ---\n");
     grayscale(image_surface);
@@ -89,10 +115,10 @@ int main(int argc, char *argv[])
     // lines_removal(img_matrix);
 
     /************************************************************
-    *                   Character Detection                     *
-    * In this section the layout will be analysed. This means   *
-    * the segmentation of blocks/lines/words/characters.        *
-    *************************************************************/
+     *                   Character Detection                     *
+     * In this section the layout will be analysed. This means   *
+     * the segmentation of blocks/lines/words/characters.        *
+     *************************************************************/
     //--- bin-matrix creation -----------------------------------
     printf("--- text as a matrix ---\n");
     size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
@@ -111,9 +137,9 @@ int main(int argc, char *argv[])
     printf("--- detecting lines ---\n");
     TextLine *textLines = calloc(MAX_NUMBER_OF_LINES, sizeof(TextLine));
     size_t nbTextLines = TextLines_ycut_find(textLines,
-                                                    img_bin_matrix,
-                                                    img_height,
-                                                    img_width);
+            img_bin_matrix,
+            img_height,
+            img_width);
     TextLines_show(textLines, nbTextLines);
 
     //--- Get Characters ----------------------------------------
@@ -125,9 +151,9 @@ int main(int argc, char *argv[])
         textLines[i].Characters = characters;
 
         textLines[i].nbCharacters = Characters_find_quick_bounds(textLines[i],
-                                                                img_bin_matrix,
-                                                                img_width,
-                                                                img_height);
+                img_bin_matrix,
+                img_width,
+                img_height);
         printf("Line[%zu] -> nbCharacters detected : %zu\n",
                 i, textLines[i].nbCharacters);
     }
@@ -142,10 +168,10 @@ int main(int argc, char *argv[])
 
 
     /************************************************************
-    *                  Character Recognition                    *
-    * Convert the input matrix (representing a character) to an *
-    * ASCII                                                     *
-    *************************************************************/
+     *                  Character Recognition                    *
+     * Convert the input matrix (representing a character) to an *
+     * ASCII                                                     *
+     *************************************************************/
     //--- possibility to initialize a neural network ------------
     // neural_network_init(...)
     // when init the network, use random value instead of nothing
@@ -158,14 +184,14 @@ int main(int argc, char *argv[])
     // get_result(input_character)
 
     /************************************************************
-    *                     Post-processing                       *
-    * Possible checking of the words by using a dictionnary or  *
-    * a lexicon - a list of words that are allowed to occur     *
-    *************************************************************/
+     *                     Post-processing                       *
+     * Possible checking of the words by using a dictionnary or  *
+     * a lexicon - a list of words that are allowed to occur     *
+     *************************************************************/
 
     /************************************************************
-    *                        Free Memory                        *
-    *************************************************************/
+     *                        Free Memory                        *
+     *************************************************************/
 
     //characters
     free(img_bin_matrix);
@@ -183,4 +209,21 @@ int main(int argc, char *argv[])
     SDL_FreeSurface(screen_surface);
 
     return EXIT_SUCCESS;
+}
+
+// called when window is closed
+void on_window_main_destroy()
+{
+    gtk_main_quit();
+}
+
+void on_btn_hello_clicked()
+{
+    static unsigned int count = 0;
+    char str_count[30] = {0};
+    
+    gtk_label_set_text(GTK_LABEL(g_lbl_hello), "Hello World !");
+    count++;
+    sprintf(str_count, "%d", count);
+    gtk_label_set_text(GTK_LABEL(g_lbl_count), str_count);    
 }
