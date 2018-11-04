@@ -1,6 +1,6 @@
 # Makefile OCR #
 # source of help : https://slashvar.github.io/2017/02/13/using-gnu-make.html
-TARGET = test
+TARGET = testgui testnn
 
 # Compiler and Linker
 CC = gcc
@@ -13,12 +13,18 @@ SDLLIB = `pkg-config --cflags --libs sdl` -lSDL_image
 GTKLIB = `pkg-config --cflags --libs gtk+-3.0`
 MATHLIB = -lm
 
-SRC = $(shell find src -type f -name "*.c") # change the src directory here !
+SRC_GUI_TEST = $(shell find gui_test -type f -name "*.c")
 
-all: $(TARGET) 
+SRC_NN = $(shell find xorgate -type f -name "*.c") # change the src directory here !
 
-ocr: $(SRC)
-	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
+
+all: $(TARGET)
+
+testgui: $(SRC_GUI_TEST)
+	$(CC) -o $@ $(SRC_GUI_TEST) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
+
+testnn: $(SRC_NN)
+	$(CC) -o $@ $(SRC_NN) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
 
 .PHONY: clean
 clean:

@@ -27,24 +27,13 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-discard</property>
   </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-discard</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-discard</property>
-  </object>
   <object class="GtkWindow" id="window_main">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">OCR by 4pm</property>
     <property name="window_position">center-always</property>
     <property name="default_width">760</property>
     <property name="default_height">450</property>
-    <property name="icon">../documents/logo_4pm.png</property>
-    <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
+    <property name="icon">../../documents/logo_4pm.png</property>
     <child>
       <placeholder/>
     </child>
@@ -282,7 +271,6 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_menu_help_quit_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -301,6 +289,19 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="column_homogeneous">True</property>
+            <child>
+              <object class="GtkImage" id="image_display">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="stock">gtk-missing-image</property>
+                <property name="icon_size">5</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">0</property>
+              </packing>
+            </child>
             <child>
               <object class="GtkGrid">
                 <property name="visible">True</property>
@@ -357,7 +358,6 @@
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
                                     <property name="title" translatable="yes">Choose the image to process</property>
-                                    <signal name="file-set" handler="on_btn_file_chooser_file_set" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -528,42 +528,6 @@
                 <property name="top_attach">0</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkViewport">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">5</property>
-                <property name="margin_right">5</property>
-                <property name="margin_top">5</property>
-                <property name="margin_bottom">5</property>
-                <property name="vscroll_policy">natural</property>
-                <property name="shadow_type">out</property>
-                <child>
-                  <object class="GtkScrolledWindow">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="shadow_type">in</property>
-                    <child>
-                      <object class="GtkViewport">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkImage" id="image">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="pixbuf">../samples/specifications.png</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
-              </packing>
-            </child>
           </object>
           <packing>
             <property name="expand">True</property>
@@ -573,5 +537,15 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-discard</property>
+  </object>
+  <object class="GtkImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-discard</property>
   </object>
 </interface>

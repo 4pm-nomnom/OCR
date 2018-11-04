@@ -7,9 +7,6 @@
 #include "image.h"
 #include "preprocessing.h"
 #include "segmentation.h"
-// #include "character_recognition.h"
-// #include "postprocessing.h"
-// #include "graphical_interface.h"
 
 #define MAX_NUMBER_OF_LINES 100
 #define MAX_NUMBER_OF_CHARACTERS 200
@@ -215,6 +212,11 @@ int main(int argc, char *argv[])
 void on_window_main_destroy()
 {
     gtk_main_quit();
+}
+
+void on_menu_help_quit_activate()
+{
+    gtk_main_quit();    
 }
 
 void on_btn_hello_clicked()

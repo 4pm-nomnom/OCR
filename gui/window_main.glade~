@@ -44,7 +44,6 @@
     <property name="default_width">760</property>
     <property name="default_height">450</property>
     <property name="icon">../documents/logo_4pm.png</property>
-    <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
     <child>
       <placeholder/>
     </child>
