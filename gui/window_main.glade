@@ -10,6 +10,11 @@
       <mime-type>.jpeg</mime-type>
     </mime-types>
   </object>
+  <object class="GtkImage" id="open-file">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">document-open</property>
+  </object>
   <object class="GtkWindow" id="window_main">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">OCR by 4pm</property>
@@ -291,6 +296,9 @@
                         <property name="height_request">50</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="margin_left">5</property>
+                        <property name="margin_right">5</property>
+                        <property name="margin_top">5</property>
                         <property name="margin_bottom">5</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
@@ -318,7 +326,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
-                    <property name="homogeneous">True</property>
                     <child>
                       <object class="GtkAspectFrame">
                         <property name="visible">True</property>
@@ -351,21 +358,54 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkFileChooserButton" id="btn_file_chooser">
-                                <property name="width_request">100</property>
+                              <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_left">5</property>
-                                <property name="margin_right">5</property>
-                                <property name="margin_top">10</property>
-                                <property name="margin_bottom">5</property>
-                                <property name="border_width">0</property>
-                                <property name="filter">filter_image</property>
-                                <property name="preview_widget_active">False</property>
-                                <property name="use_preview_label">False</property>
-                                <property name="title" translatable="yes">Choose the image to process</property>
-                                <property name="width_chars">6</property>
-                                <signal name="file-set" handler="on_btn_file_chooser_file_set" swapped="no"/>
+                                <child>
+                                  <object class="GtkButton" id="btn_image_selection">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="margin_right">5</property>
+                                    <property name="margin_top">5</property>
+                                    <property name="margin_bottom">5</property>
+                                    <property name="image">open-file</property>
+                                    <signal name="clicked" handler="on_btn_image_selection_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkAspectFrame">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="margin_left">6</property>
+                                    <property name="margin_right">5</property>
+                                    <property name="label_xalign">0</property>
+                                    <property name="shadow_type">in</property>
+                                    <child>
+                                      <object class="GtkLabel" id="lbl_image_name">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="margin_left">4</property>
+                                        <property name="margin_right">4</property>
+                                        <property name="margin_top">5</property>
+                                        <property name="margin_bottom">5</property>
+                                        <property name="label" translatable="yes">Select an Image</property>
+                                        <property name="single_line_mode">True</property>
+                                        <attributes>
+                                          <attribute name="font-desc" value="Ubuntu Mono 10"/>
+                                        </attributes>
+                                      </object>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
                               </object>
                               <packing>
                                 <property name="left_attach">0</property>
@@ -387,8 +427,6 @@
                         <property name="can_focus">False</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
-                        <property name="margin_left">5</property>
-                        <property name="margin_right">5</property>
                         <property name="row_homogeneous">True</property>
                         <child>
                           <object class="GtkButton" id="btn_convert">
@@ -396,7 +434,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="activate" handler="on_btn_convert_activate" swapped="no"/>
+                            <signal name="clicked" handler="on_btn_convert_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="left_attach">0</property>
@@ -434,6 +472,7 @@
                         <property name="margin_right">5</property>
                         <property name="margin_top">5</property>
                         <property name="margin_bottom">10</property>
+                        <property name="resize_mode">immediate</property>
                         <property name="label_xalign">0</property>
                         <property name="shadow_type">in</property>
                         <child>
@@ -441,6 +480,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="halign">center</property>
+                            <property name="valign">center</property>
                             <child>
                               <object class="GtkLabel" id="lbl_text">
                                 <property name="visible">True</property>
@@ -464,11 +504,10 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="margin_left">5</property>
                                     <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
-                                    <signal name="activate" handler="on_btn_text_save_activate" swapped="no"/>
+                                    <signal name="clicked" handler="on_btn_text_save_clicked" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -482,9 +521,10 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="margin_left">5</property>
+                                    <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
-                                    <signal name="activate" handler="on_btn_text_copy_activate" swapped="no"/>
+                                    <signal name="clicked" handler="on_btn_text_copy_clicked" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -523,6 +563,149 @@
             <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkDialog" id="window_about">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">About the OCR</property>
+    <property name="type_hint">dialog</property>
+    <property name="transient_for">window_main</property>
+    <signal name="close" handler="on_window_about_close" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkLinkButton">
+                <property name="label" translatable="yes">GitHub</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="relief">none</property>
+                <property name="uri">https://github.com/4pm-nomnom/OCR</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_about_close">
+                <property name="label" translatable="yes">Close</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btn_about_close_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="pixbuf">../documents/logo_4pm.png</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">OCR by 4pm
+
+Created by
+Cloé LACOMBE
+Pierrick MADE
+Victor DUTTO</property>
+            <property name="justify">center</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkFileChooserDialog" id="window_file_selection">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Choose the image to process</property>
+    <property name="type_hint">dialog</property>
+    <property name="transient_for">window_main</property>
+    <signal name="key-press-event" handler="on_window_file_selection_key_press_event" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="btn_file_selection_cancel">
+                <property name="label" translatable="yes">Cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btn_file_selection_cancel_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_file_selection_open">
+                <property name="label" translatable="yes">Load Image</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btn_file_selection_open_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>

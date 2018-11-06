@@ -12,31 +12,46 @@
 #define MAX_NUMBER_OF_CHARACTERS 200
 
 GtkImage *g_image_main;
-GtkFileChooser *g_btn_file_chooser;
+GtkWidget *g_lbl_image_name;
+GtkFileChooser *g_file_selection;
 GtkWidget *g_text_result;
+
+GtkWidget *window_main;
+GtkWidget *window_about;
+GtkWidget *window_file_selection;
 
 int main(int argc, char *argv[])
 {
     // --- GTK Window ------------------------------------------
     GtkBuilder *builder;
-    GtkWidget *window;
 
     gtk_init(&argc, &argv);
 
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
 
-    window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+    // get pointers to windows
+    window_main = GTK_WIDGET(
+        gtk_builder_get_object(builder, "window_main"));
+    window_about = GTK_WIDGET(
+        gtk_builder_get_object(builder, "window_about"));
+    window_file_selection = GTK_WIDGET(
+        gtk_builder_get_object(builder, "window_file_selection"));
     gtk_builder_connect_signals(builder, NULL);
 
-    // get pointers to the labels
-    g_image_main = GTK_IMAGE(gtk_builder_get_object(builder, "image_main"));
-    g_btn_file_chooser = GTK_FILE_CHOOSER(gtk_builder_get_object(builder, "btn_file_chooser"));
-    g_text_result = GTK_WIDGET(gtk_builder_get_object(builder, "text_result"));
+    // get pointers to objects
+    g_image_main = GTK_IMAGE(
+        gtk_builder_get_object(builder, "image_main"));
+    g_lbl_image_name = GTK_WIDGET(
+        gtk_builder_get_object(builder,"lbl_image_name"));
+    g_file_selection = GTK_FILE_CHOOSER(
+        gtk_builder_get_object(builder, "window_file_selection"));
+    g_text_result = GTK_WIDGET(
+        gtk_builder_get_object(builder, "text_result"));
 
     g_object_unref(builder);
 
-    gtk_widget_show(window);
+    gtk_widget_show(window_main);
     gtk_main();
 
 
@@ -215,11 +230,10 @@ void on_window_main_destroy()
     gtk_main_quit();
 }
 
-//----------------------MENU------------------------------
+//--------------TOPBAR-MENU------------------------------
 void on_menu_file_add_image_activate()
 {
-    
-    //TODO
+    gtk_widget_show(window_file_selection);
 }
 
 //...
@@ -255,15 +269,13 @@ void on_menu_help_help_activate()
 
 void on_menu_help_about_activate()
 {
-    //TODO
-    
+    gtk_widget_show(window_about);
 }
 
 
-void on_btn_file_chooser_file_set()
+void on_btn_image_selection_clicked()
 {
-    gchar *image_path = gtk_file_chooser_get_filename(g_btn_file_chooser);
-    gtk_image_set_from_file(g_image_main, image_path);
+    gtk_widget_show(window_file_selection);
 }
 
 
@@ -273,21 +285,53 @@ void on_btn_advanced_toggled()
     
 }
 
-void on_btn_convert_activate()
+void on_btn_convert_clicked()
 {
     //TODO CONVERTION OCR WOW
     
 }
 
 
-void on_btn_text_save_activate()
+void on_btn_text_save_clicked()
 {
     //TODO save current text contained in text_result
     
 }
 
-void on_btn_text_copy_activate()
+void on_btn_text_copy_clicked()
 {
     //TODO copy to clipboard content of text_result
     
+}
+
+//-------------FILE-SELECTION-WINDOW--------------------
+void on_btn_file_selection_cancel_clicked()
+{
+    gtk_widget_hide(window_file_selection);
+}
+void on_btn_file_selection_open_clicked()
+{
+    gchar *image_path = gtk_file_chooser_get_filename(g_file_selection);
+    gtk_image_set_from_file(g_image_main, image_path);
+    
+    //TODO change lbl_image_name format
+    gsize maxlength = 12;
+    gchar *image_name = g_strreverse(image_path); //path is reversed too /care
+    image_name = g_strndup(image_path, maxlength);
+    image_name = g_strreverse(image_name);
+    gchar *dots = "...";
+    image_name = g_strconcat(dots, image_name, NULL);
+    gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
+    gtk_widget_hide(window_file_selection);
+}
+//TODO add doubleclick selection // enter
+
+//--------------ABOUT-WINDOW----------------------------
+void on_window_about_close()
+{
+    gtk_widget_hide(window_about);
+}
+void on_btn_about_close_clicked()
+{
+    gtk_widget_hide(window_about);
 }
