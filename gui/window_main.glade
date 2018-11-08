@@ -366,6 +366,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="margin_left">5</property>
                                     <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
@@ -381,16 +382,15 @@
                                   <object class="GtkAspectFrame">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="margin_left">6</property>
-                                    <property name="margin_right">5</property>
+                                    <property name="margin_left">5</property>
                                     <property name="label_xalign">0</property>
                                     <property name="shadow_type">in</property>
                                     <child>
                                       <object class="GtkLabel" id="lbl_image_name">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="margin_left">4</property>
-                                        <property name="margin_right">4</property>
+                                        <property name="margin_left">5</property>
+                                        <property name="margin_right">5</property>
                                         <property name="margin_top">5</property>
                                         <property name="margin_bottom">5</property>
                                         <property name="label" translatable="yes">Select an Image</property>
@@ -504,6 +504,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
+                                    <property name="margin_left">5</property>
                                     <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
@@ -521,7 +522,6 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="margin_left">5</property>
-                                    <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
                                     <signal name="clicked" handler="on_btn_text_copy_clicked" swapped="no"/>
@@ -571,9 +571,11 @@
   <object class="GtkDialog" id="window_about">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">About the OCR</property>
+    <property name="window_position">center-always</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_main</property>
     <signal name="close" handler="on_window_about_close" swapped="no"/>
+    <signal name="destroy" handler="on_window_about_destroy" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -590,7 +592,7 @@
               <object class="GtkLinkButton">
                 <property name="label" translatable="yes">GitHub</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
+                <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
                 <property name="uri">https://github.com/4pm-nomnom/OCR</property>
@@ -658,8 +660,11 @@ Victor DUTTO</property>
   <object class="GtkFileChooserDialog" id="window_file_selection">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Choose the image to process</property>
+    <property name="window_position">center-always</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_main</property>
+    <signal name="destroy" handler="on_window_file_selection_destroy" swapped="no"/>
+    <signal name="file-activated" handler="on_window_file_selection_file_activated" swapped="no"/>
     <signal name="key-press-event" handler="on_window_file_selection_key_press_event" swapped="no"/>
     <child>
       <placeholder/>
@@ -692,6 +697,7 @@ Victor DUTTO</property>
                 <property name="label" translatable="yes">Load Image</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="can_default">True</property>
                 <property name="receives_default">True</property>
                 <signal name="clicked" handler="on_btn_file_selection_open_clicked" swapped="no"/>
               </object>
@@ -709,6 +715,15 @@ Victor DUTTO</property>
           </packing>
         </child>
       </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="window_nn">
+    <property name="can_focus">False</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <placeholder/>
     </child>
   </object>
 </interface>
