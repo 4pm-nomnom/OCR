@@ -10,8 +10,10 @@ EPITA - S3 - API - O.C.R software by 4pm
 1. Clone the repository : `git clone https://github.com/4pm-nomnom/OCR.git`
 2. Go to the OCR folder : `cd OCR`
 3. Compile the project : `make all`
-4. Launch the program : `./ocr samples/light_on_orange.png`
-5. clean the repository using : `make clean`
+4. Launch the program : `./ocr`
+5. Follow the instructions given on the screen
+6. If you have any issue, do not hesitate to contact us
+7. Clean your repository using : `make clean`
 
 ## Dataflow
 1. Image loading
@@ -21,6 +23,9 @@ EPITA - S3 - API - O.C.R software by 4pm
 5. Character detection
 6. Identification of extracted characters
 7. Text reconstruction
+
+## Contribution
+See more in the [CONTRIBUTING](docs/CONTRIBUTING.md) file
 
 ## Links
 * http://www.debug-pro.com/epita/prog/s3/index.html
