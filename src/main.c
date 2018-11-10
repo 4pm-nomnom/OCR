@@ -3,6 +3,7 @@
 // #include "SDL/SDL.h" //included in image.h
 // #include "SDL/SDL_image.h" //included in image.h
 #include <gtk/gtk.h> // graphical user interfaces
+#include "glib/gprintf.h"
 
 #include "image.h"
 #include "preprocessing.h"
@@ -14,11 +15,13 @@
 GtkImage *g_image_main;
 GtkWidget *g_lbl_image_name;
 GtkFileChooser *g_file_selection;
-GtkWidget *g_text_result;
+GtkFileChooser *g_file_save;
+GtkTextView *g_text_result;
 
 GtkWidget *window_main;
 GtkWidget *window_about;
 GtkWidget *window_file_selection;
+GtkWidget *window_file_save;
 GtkWidget *window_nn;
 
 GtkBuilder *builder;
@@ -43,10 +46,10 @@ int main(int argc, char *argv[])
             gtk_builder_get_object(builder, "image_main"));
     g_lbl_image_name = GTK_WIDGET(
             gtk_builder_get_object(builder,"lbl_image_name"));
-    g_text_result = GTK_WIDGET(
+    g_text_result = GTK_TEXT_VIEW(
             gtk_builder_get_object(builder, "text_result"));
 
-    g_object_unref(builder);
+    //g_object_unref(builder);
 
     gtk_widget_show(window_main);
     gtk_main();
@@ -227,11 +230,27 @@ void on_window_main_destroy()
     gtk_main_quit();
 }
 
+gchar* gchar_from_text_view(GtkTextView *text_view)
+{
+    GtkTextBuffer *textBuffer;
+    textBuffer = gtk_text_view_get_buffer(text_view);
+
+    gchar *text_content;
+    GtkTextIter start;
+    GtkTextIter end;
+    gtk_text_buffer_get_start_iter(textBuffer, &start);
+    gtk_text_buffer_get_end_iter(textBuffer, &end);
+
+    text_content = gtk_text_buffer_get_text(textBuffer, &start, &end, TRUE);
+    return text_content;
+}
+
 //-----------------------------------------------------------------------------
 //--FILE-SELECTION-WINDOW
 void window_file_selection_create()
 {
-    gtk_widget_destroy(window_file_selection);
+    if (window_file_selection)
+        gtk_widget_destroy(window_file_selection);
     gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
     gtk_builder_connect_signals(builder, NULL);
     g_file_selection = GTK_FILE_CHOOSER(
@@ -240,7 +259,7 @@ void window_file_selection_create()
             gtk_builder_get_object(builder, "window_file_selection"));
     gtk_widget_show(window_file_selection);
 
-    g_object_unref(builder);
+    //g_object_unref(builder);
 }
 
 void on_btn_file_selection_cancel_clicked()
@@ -261,7 +280,7 @@ void on_btn_file_selection_open_clicked()
     gchar *dots = "...";
     image_name = g_strconcat(dots, image_name, NULL);
     gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
-    gtk_widget_hide(window_file_selection);
+    gtk_widget_destroy(window_file_selection);
 }
 
 void on_window_file_selection_file_activated(GtkFileChooser *chooser,
@@ -276,28 +295,77 @@ void on_window_file_selection_file_activated(GtkFileChooser *chooser,
 //--ABOUT-WINDOW
 void window_about_create()
 {
-    gtk_widget_destroy(window_about);
+    if (window_about)
+        gtk_widget_destroy(window_about);
     gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
     gtk_builder_connect_signals(builder, NULL);
     window_about = GTK_WIDGET(
             gtk_builder_get_object(builder, "window_about"));
     gtk_widget_show(window_about);
 
-    g_object_unref(builder);
+    //g_object_unref(builder);
 }
 
 /*
-void on_window_about_close()
-{
-    gtk_widget_hide(window_about);
-}
-*/
+   void on_window_about_close()
+   {
+   gtk_widget_hide(window_about);
+   }
+ */
 
 void on_btn_about_close_clicked()
 {
     gtk_widget_destroy(window_about);
 }
 
+//-----------------------------------------------------------------------------
+//--FILE-SAVE-WINDOW
+void window_file_save_create()
+{
+    if (window_file_save)
+        gtk_widget_destroy(window_file_save);
+
+    gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
+    gtk_builder_connect_signals(builder, NULL);
+    g_file_save = GTK_FILE_CHOOSER(
+            gtk_builder_get_object(builder, "window_file_save"));
+
+    window_file_save = GTK_WIDGET(
+            gtk_builder_get_object(builder, "window_file_save"));
+
+    gtk_file_chooser_set_do_overwrite_confirmation (g_file_save, TRUE);
+    gtk_file_chooser_set_current_name (g_file_save, "ocr_result.txt");
+    gtk_widget_show(window_file_save);
+
+    //g_object_unref(builder);
+}
+
+void on_btn_file_save_cancel_clicked()
+{
+    gtk_widget_destroy(window_file_save);
+}
+
+void on_btn_file_save_save_clicked()
+{
+    //gchar *save_path = gtk_editable_get_chars (g_entry_file_save_name, 0, -1);
+    char *filename;
+    filename = gtk_file_chooser_get_filename(g_file_save);
+    FILE *fs;
+    fs = fopen(filename, "w");
+    gchar *result_text = gchar_from_text_view(g_text_result);
+    fprintf(fs, "%s", result_text);
+    g_free(filename);
+    fclose(fs);
+    gtk_widget_destroy(window_file_save);
+}
+
+void on_window_file_save_file_activated(GtkFileChooser *chooser,
+        gpointer data)
+{
+    (void)chooser;
+    (void)data;
+    on_btn_file_save_save_clicked();
+}
 
 //-----------------------------------------------------------------------------
 //--NEURAL-NETWORK-WINDOW
@@ -310,60 +378,12 @@ void window_nn_create()
             gtk_builder_get_object(builder, "window_nn"));
     gtk_widget_show(window_nn);
 
-    g_object_unref(builder);
-}
-
-void on_window_nn_close()
-{
-    gtk_widget_hide(window_about);
+    //g_object_unref(builder);
 }
 
 void on_btn_nn_close_clicked()
 {
-    gtk_widget_destroy(window_about);
-}
-
-//-----------------------------------------------------------------------------
-//--TOPBAR-MENU
-void on_menu_file_add_image_activate()
-{
-    window_file_selection_create();
-}
-
-//...
-
-void on_menu_file_quit_activate()
-{
-    gtk_main_quit();
-}
-
-void on_menu_tools_deskew_activate()
-{
-    //TODO
-
-}
-
-void on_menu_tools_spellchecker_activate()
-{
-    //TODO
-
-}
-
-void on_menu_tools_neural_network_activate()
-{
-    //TODO
-
-}
-
-void on_menu_help_help_activate()
-{
-    //TODO
-
-}
-
-void on_menu_help_about_activate()
-{
-    window_about_create();
+    gtk_widget_destroy(window_nn);
 }
 
 //-----------------------------------------------------------------------------
@@ -381,17 +401,90 @@ void on_btn_advanced_toggled()
 void on_btn_convert_clicked()
 {
     //TODO CONVERTION OCR WOW
-
 }
 
 void on_btn_text_save_clicked()
 {
-    //TODO save current text contained in text_result
-
+    window_file_save_create();
 }
 
 void on_btn_text_copy_clicked()
 {
-    //TODO copy to clipboard content of text_result
+    const char *message = gchar_from_text_view(g_text_result);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+            message, strlen(message));
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+}
 
+//-----------------------------------------------------------------------------
+//--TOPBAR-MENU
+void on_menu_file_add_image_activate()
+{
+    window_file_selection_create();
+}
+
+void on_menu_file_save_text_activate()
+{
+    on_btn_text_save_clicked();
+}
+
+void on_menu_file_copy_text_activate()
+{
+    on_btn_text_copy_clicked();
+}
+
+void on_menu_file_quit_activate()
+{
+    gtk_main_quit();
+}
+
+void on_menu_view_zoom_in_activate()
+{
+    //TODO
+}
+
+void on_menu_view_zoom_out_activate()
+{
+    //TODO
+}
+
+void on_menu_view_normal_size_activate()
+{
+    //TODO
+}
+
+void on_menu_view_best_fit_activate()
+{
+    //TODO
+}
+
+void on_menu_tools_deskew_activate()
+{
+    //TODO
+}
+
+void on_menu_tools_spellchecker_activate()
+{
+    //TODO
+}
+
+void on_menu_tools_neural_network_activate()
+{
+    //TODO
+}
+
+void on_menu_help_help_activate()
+{
+    int fail_open_url =
+        system("sensible-browser https://github.com/4pm-nomnom/OCR");
+    if (fail_open_url)
+    {
+        printf("failed to open the help page... open it directly :\n");
+        printf("https://github.com/4pm-nomnom/OCR\n");
+    }
+}
+
+void on_menu_help_about_activate()
+{
+    window_about_create();
 }

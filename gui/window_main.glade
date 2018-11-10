@@ -10,6 +10,11 @@
       <mime-type>.jpeg</mime-type>
     </mime-types>
   </object>
+  <object class="GtkImage" id="no_image">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-discard</property>
+  </object>
   <object class="GtkImage" id="open-file">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -21,7 +26,7 @@
     <property name="window_position">center-always</property>
     <property name="default_width">760</property>
     <property name="default_height">450</property>
-    <property name="icon">../documents/logo_4pm.png</property>
+    <property name="icon">../docs/logo_4pm.png</property>
     <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
     <child>
       <placeholder/>
@@ -46,10 +51,10 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_file_add_image">
-                        <property name="label">Add Image</property>
+                        <property name="label" translatable="yes">Add Image</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="image">__glade_unnamed_8</property>
+                        <property name="image">no_image</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_menu_file_add_image_activate" swapped="no"/>
                       </object>
@@ -61,67 +66,23 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="menu_text">
+                      <object class="GtkImageMenuItem" id="menu_file_save_text">
+                        <property name="label" translatable="yes">Save Text As</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Text Edition</property>
-                        <child type="submenu">
-                          <object class="GtkMenu" id="submenu_text">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <child>
-                              <object class="GtkImageMenuItem" id="menu_text_save-as">
-                                <property name="label">gtk-save-as</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="use_stock">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSeparatorMenuItem">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImageMenuItem" id="menu_text_cut">
-                                <property name="label">gtk-cut</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="use_stock">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImageMenuItem" id="menu_text_copy">
-                                <property name="label">gtk-copy</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="use_stock">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImageMenuItem" id="menu_text_paste">
-                                <property name="label">gtk-paste</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="use_stock">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkImageMenuItem" id="menu_text_delete">
-                                <property name="label">gtk-delete</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="use_underline">True</property>
-                                <property name="use_stock">True</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
+                        <property name="image">no_image</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_file_save_text_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_file_copy_text">
+                        <property name="label" translatable="yes">Copy All Text</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="image">no_image</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_file_copy_text_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -138,6 +99,58 @@
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_menu_file_quit_activate" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_view">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">View</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="submenu_view">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_view_zoom_in">
+                        <property name="label">Zoom In</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_view_zoom_in_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_view_zoom_out">
+                        <property name="label" translatable="yes">Zoom Out</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="image">no_image</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_view_zoom_out_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_view_normal_size">
+                        <property name="label" translatable="yes">Normal Size</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="image">no_image</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_view_normal_size_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_view_best_fit">
+                        <property name="label" translatable="yes">Best Fit</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="image">no_image</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_view_best_fit_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -167,7 +180,6 @@
                         <property name="label">Spellchecker</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="image">__glade_unnamed_13</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_menu_tools_spellchecker_activate" swapped="no"/>
                       </object>
@@ -177,7 +189,6 @@
                         <property name="label">Neural Network Preferences</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="image">__glade_unnamed_13</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_menu_tools_neural_network_activate" swapped="no"/>
                       </object>
@@ -366,7 +377,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="margin_left">5</property>
                                     <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
@@ -383,6 +393,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="margin_left">5</property>
+                                    <property name="margin_right">5</property>
                                     <property name="label_xalign">0</property>
                                     <property name="shadow_type">in</property>
                                     <child>
@@ -395,9 +406,6 @@
                                         <property name="margin_bottom">5</property>
                                         <property name="label" translatable="yes">Select an Image</property>
                                         <property name="single_line_mode">True</property>
-                                        <attributes>
-                                          <attribute name="font-desc" value="Ubuntu Mono 10"/>
-                                        </attributes>
                                       </object>
                                     </child>
                                   </object>
@@ -504,7 +512,6 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="margin_left">5</property>
                                     <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
@@ -522,6 +529,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="margin_left">5</property>
+                                    <property name="margin_right">5</property>
                                     <property name="margin_top">5</property>
                                     <property name="margin_bottom">5</property>
                                     <signal name="clicked" handler="on_btn_text_copy_clicked" swapped="no"/>
@@ -574,8 +582,6 @@
     <property name="window_position">center-always</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_main</property>
-    <signal name="close" handler="on_window_about_close" swapped="no"/>
-    <signal name="destroy" handler="on_window_about_destroy" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -592,7 +598,7 @@
               <object class="GtkLinkButton">
                 <property name="label" translatable="yes">GitHub</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="relief">none</property>
                 <property name="uri">https://github.com/4pm-nomnom/OCR</property>
@@ -628,7 +634,7 @@
           <object class="GtkImage">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="pixbuf">../documents/logo_4pm.png</property>
+            <property name="pixbuf">../docs/logo_4pm.png</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -657,15 +663,72 @@ Victor DUTTO</property>
       </object>
     </child>
   </object>
+  <object class="GtkFileChooserDialog" id="window_file_save">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Where should the result text be saved ?</property>
+    <property name="window_position">center-always</property>
+    <property name="type_hint">dialog</property>
+    <property name="transient_for">window_main</property>
+    <property name="action">save</property>
+    <signal name="file-activated" handler="on_window_file_save_file_activated" swapped="no"/>
+    <child>
+      <placeholder/>
+    </child>
+    <child internal-child="vbox">
+      <object class="GtkBox">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="btn_file_save_cancel">
+                <property name="label" translatable="yes">Cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btn_file_save_cancel_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_file_save_save">
+                <property name="label" translatable="yes">Save</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_btn_file_save_save_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkFileChooserDialog" id="window_file_selection">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Choose the image to process</property>
     <property name="window_position">center-always</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_main</property>
-    <signal name="destroy" handler="on_window_file_selection_destroy" swapped="no"/>
     <signal name="file-activated" handler="on_window_file_selection_file_activated" swapped="no"/>
-    <signal name="key-press-event" handler="on_window_file_selection_key_press_event" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -715,15 +778,6 @@ Victor DUTTO</property>
           </packing>
         </child>
       </object>
-    </child>
-  </object>
-  <object class="GtkWindow" id="window_nn">
-    <property name="can_focus">False</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </object>
 </interface>
