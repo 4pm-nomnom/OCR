@@ -8,7 +8,9 @@ your work using them. It is really not an issue to have something not
 finished using those tools.
 
 # Tests
-0. Clone the repo if it wasn't already done (see [README.md](../README.md))
+0. Clone the repo if it wasn't already done
+    -   `git clone https://username@github.com/4pm-nomnom/OCR.git`
+    -   (see [README.md](../README.md))
 1. Go to the OCR folder : `cd OCR`
 2. update your local version : `git pull`
 3. Go to the tests folder : `cd tests`
