@@ -42,6 +42,8 @@ gboolean isactive_show_segmentation;
 gboolean isactive_spell_check_en;
 gboolean isactive_spell_check_fr;
 
+void gchar_to_text_view(GtkTextView *text_view, gchar *text);
+
 int main(int argc, char *argv[])
 {
     // --- GTK Window ------------------------------------------
@@ -67,9 +69,10 @@ int main(int argc, char *argv[])
 
     //g_object_unref(builder);
 
+    gchar_to_text_view(g_text_result, "Welcome to the OCR by 4pm !");
     gtk_widget_show(window_main);
     gtk_main();
-
+    
     //--- get argv (img_path) -----------------------------------
     if (argc < 2)
     {
@@ -265,6 +268,13 @@ gchar* gchar_from_text_view(GtkTextView *text_view)
 
     text_content = gtk_text_buffer_get_text(textBuffer, &start, &end, TRUE);
     return text_content;
+}
+
+void gchar_to_text_view(GtkTextView *text_view, gchar *text)
+{
+    GtkTextBuffer *textBuffer;
+    textBuffer = gtk_text_view_get_buffer(text_view);
+    gtk_text_buffer_set_text(textBuffer, text, strlen(text));
 }
 
 //-----------------------------------------------------------------------------
@@ -532,36 +542,43 @@ void on_menu_file_quit_activate()
 void on_menu_view_zoom_in_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "Zoom in! (not implemented yet ...)\n");
 }
 
 void on_menu_view_zoom_out_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "Zoom Out! (not implemented yet ...)\n");
 }
 
 void on_menu_view_normal_size_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "Normal size image! (not implemented yet ...)\n");
 }
 
 void on_menu_view_best_fit_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "Best fit! (not implemented yet ...)\n");
 }
 
 void on_menu_tools_deskew_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "De-skew tool! (not implemented yet ...)\n");
 }
 
 void on_menu_tools_spellchecker_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "Spell-checker! (not implemented yet ...)\n");
 }
 
 void on_menu_tools_neural_network_activate()
 {
     //TODO
+    gchar_to_text_view(g_text_result, "Neural-network preferences!\n(not implemented yet ...)\n");
 }
 
 void on_menu_help_help_activate()
