@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h> // used for sleep (to show loading page <3)
 // #include "SDL/SDL.h" //included in image.h
 // #include "SDL/SDL_image.h" //included in image.h
 #include <gtk/gtk.h> // graphical user interfaces
@@ -18,15 +19,28 @@ GtkFileChooser *g_file_selection;
 GtkFileChooser *g_file_save;
 GtkTextView *g_text_result;
 
+GtkToggleButton *cb_advanced;
+GtkToggleButton *cb_show_pre_processing;
+GtkToggleButton *cb_show_segmentation;
+GtkToggleButton *rb_spell_check_en;
+GtkToggleButton *rb_spell_check_fr;
+GtkToggleButton *rb_spell_check_disable;
+
 GtkWidget *window_main;
 GtkWidget *window_about;
 GtkWidget *window_file_selection;
 GtkWidget *window_file_save;
+GtkWidget *window_advanced;
+GtkWidget *window_loading;
 GtkWidget *window_nn;
 
 GtkBuilder *builder;
 
-int advanced_convert;
+gboolean isactive_advanced;
+gboolean isactive_show_preprocessing;
+gboolean isactive_show_segmentation;
+gboolean isactive_spell_check_en;
+gboolean isactive_spell_check_fr;
 
 int main(int argc, char *argv[])
 {
@@ -48,12 +62,13 @@ int main(int argc, char *argv[])
             gtk_builder_get_object(builder,"lbl_image_name"));
     g_text_result = GTK_TEXT_VIEW(
             gtk_builder_get_object(builder, "text_result"));
+    cb_advanced = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "cb_advanced"));
 
     //g_object_unref(builder);
 
     gtk_widget_show(window_main);
     gtk_main();
-
 
     //--- get argv (img_path) -----------------------------------
     if (argc < 2)
@@ -224,7 +239,14 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-// called when window is closed
+//-----------------------------------------------------------------------------
+//--MAIN-FUNCTION-CONVERT
+void convert()
+{
+    //TODO
+}
+
+// called when main_window is closed
 void on_window_main_destroy()
 {
     gtk_main_quit();
@@ -243,6 +265,16 @@ gchar* gchar_from_text_view(GtkTextView *text_view)
 
     text_content = gtk_text_buffer_get_text(textBuffer, &start, &end, TRUE);
     return text_content;
+}
+
+//-----------------------------------------------------------------------------
+//--LOADING-WINDOW
+void window_loading_create()
+{
+    gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
+    window_loading = GTK_WIDGET(
+            gtk_builder_get_object(builder, "window_loading"));
+    gtk_widget_show(window_loading);
 }
 
 //-----------------------------------------------------------------------------
@@ -306,13 +338,6 @@ void window_about_create()
     //g_object_unref(builder);
 }
 
-/*
-   void on_window_about_close()
-   {
-   gtk_widget_hide(window_about);
-   }
- */
-
 void on_btn_about_close_clicked()
 {
     gtk_widget_destroy(window_about);
@@ -368,6 +393,61 @@ void on_window_file_save_file_activated(GtkFileChooser *chooser,
 }
 
 //-----------------------------------------------------------------------------
+//--ADVANCED-CONVERT-WINDOW
+void window_advanced_create()
+{
+    if (window_advanced)
+        gtk_widget_destroy(window_advanced);
+
+    gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
+    gtk_builder_connect_signals(builder, NULL);
+    window_advanced = GTK_WIDGET(
+            gtk_builder_get_object(builder, "window_advanced"));
+
+    cb_show_pre_processing = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "cb_show_pre_processing"));
+    cb_show_segmentation = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "cb_show_segmentation"));
+    
+    rb_spell_check_en = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_spell_check_en"));
+    rb_spell_check_fr = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_spell_check_fr"));
+    rb_spell_check_disable = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_spell_check_disable"));
+    gtk_toggle_button_set_active (rb_spell_check_en, TRUE);
+    gtk_toggle_button_set_active (rb_spell_check_fr, FALSE);
+    gtk_toggle_button_set_active (rb_spell_check_disable, FALSE);
+     
+    gtk_widget_show(window_advanced);
+}
+
+void on_btn_advanced_cancel_clicked()
+{
+    gtk_widget_destroy(window_advanced);
+}
+
+void on_btn_advanced_convert_clicked()
+{
+    printf("start image convertion with advanced settings\n");
+    gtk_widget_destroy(window_advanced);
+}
+
+void on_cb_show_pre_processing_toggled()
+{
+    isactive_show_preprocessing = gtk_toggle_button_get_active(cb_show_pre_processing);
+}
+void on_cb_show_segmentation_toggled()
+{
+    isactive_show_segmentation = gtk_toggle_button_get_active(cb_show_segmentation);
+}
+void on_rb_spell_check_toggled()
+{
+   isactive_spell_check_en = gtk_toggle_button_get_active(rb_spell_check_en);
+   isactive_spell_check_fr = gtk_toggle_button_get_active(rb_spell_check_fr);
+}
+
+//-----------------------------------------------------------------------------
 //--NEURAL-NETWORK-WINDOW
 void window_nn_create()
 {
@@ -377,8 +457,6 @@ void window_nn_create()
     window_nn = GTK_WIDGET(
             gtk_builder_get_object(builder, "window_nn"));
     gtk_widget_show(window_nn);
-
-    //g_object_unref(builder);
 }
 
 void on_btn_nn_close_clicked()
@@ -393,14 +471,27 @@ void on_btn_image_selection_clicked()
     window_file_selection_create();
 }
 
-void on_btn_advanced_toggled()
+void on_cb_advanced_toggled()
 {
-    //TODO change button variable state
+    if (window_advanced)
+        gtk_widget_destroy(window_advanced);
+    isactive_advanced = gtk_toggle_button_get_active(cb_advanced);
 }
 
 void on_btn_convert_clicked()
 {
-    //TODO CONVERTION OCR WOW
+    //window_loading_create();
+    //sleep(2);
+    if (isactive_advanced)
+    {
+        window_advanced_create();
+    }
+    else
+    {
+        printf("start image convertion with normal settings\n");
+        convert();
+    }
+    //gtk_widget_destroy(window_loading);
 }
 
 void on_btn_text_save_clicked()
