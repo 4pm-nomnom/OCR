@@ -11,6 +11,7 @@ LDFLAGS = -pthread -export-dynamic
 
 SDLLIB = `pkg-config --cflags --libs sdl` -lSDL_image
 GTKLIB = `pkg-config --cflags --libs gtk+-3.0`
+GSPELLLIB = `pkg-config --cflags --libs gspell-1`
 MATHLIB = -lm
 
 SRC = $(shell find src -type f -name "*.c")
@@ -18,7 +19,7 @@ SRC = $(shell find src -type f -name "*.c")
 all: $(TARGET) 
 
 ocr: $(SRC)
-	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
+	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(GSPELLLIB) $(MATHLIB)
 
 .PHONY: clean
 clean:
