@@ -5,6 +5,7 @@
 // #include "SDL/SDL_image.h" //included in image.h
 #include <gtk/gtk.h> // graphical user interfaces
 #include "glib/gprintf.h"
+#include <gspell/gspell.h>
 
 #include "image.h"
 #include "preprocessing.h"
@@ -18,6 +19,7 @@ GtkWidget *g_lbl_image_name;
 GtkFileChooser *g_file_selection;
 GtkFileChooser *g_file_save;
 GtkTextView *g_text_result;
+GspellNavigator *g_spell_navigator;
 
 GtkToggleButton *cb_advanced;
 GtkToggleButton *cb_show_pre_processing;
@@ -67,12 +69,17 @@ int main(int argc, char *argv[])
     cb_advanced = GTK_TOGGLE_BUTTON(
             gtk_builder_get_object(builder, "cb_advanced"));
 
-    //g_object_unref(builder);
+    //initialize inline gspell for the textView
+    GspellTextView *gspell_view;
+    gspell_view = gspell_text_view_get_from_gtk_text_view (g_text_result);
+    gspell_text_view_basic_setup (gspell_view);
+
 
     gchar_to_text_view(g_text_result, "Welcome to the OCR by 4pm !");
     gtk_widget_show(window_main);
+
     gtk_main();
-    
+
     //--- get argv (img_path) -----------------------------------
     if (argc < 2)
     {
@@ -418,7 +425,7 @@ void window_advanced_create()
             gtk_builder_get_object(builder, "cb_show_pre_processing"));
     cb_show_segmentation = GTK_TOGGLE_BUTTON(
             gtk_builder_get_object(builder, "cb_show_segmentation"));
-    
+
     rb_spell_check_en = GTK_TOGGLE_BUTTON(
             gtk_builder_get_object(builder, "rb_spell_check_en"));
     rb_spell_check_fr = GTK_TOGGLE_BUTTON(
@@ -428,7 +435,7 @@ void window_advanced_create()
     gtk_toggle_button_set_active (rb_spell_check_en, TRUE);
     gtk_toggle_button_set_active (rb_spell_check_fr, FALSE);
     gtk_toggle_button_set_active (rb_spell_check_disable, FALSE);
-     
+
     gtk_widget_show(window_advanced);
 }
 
@@ -571,8 +578,10 @@ void on_menu_tools_deskew_activate()
 
 void on_menu_tools_spellchecker_activate()
 {
-    //TODO
-    gchar_to_text_view(g_text_result, "Spell-checker! (not implemented yet ...)\n");
+    GtkWidget *spell_checker_dialog = gspell_checker_dialog_new(
+            GTK_WINDOW(window_main),
+            gspell_navigator_text_view_new(g_text_result));
+    gtk_widget_show(spell_checker_dialog);
 }
 
 void on_menu_tools_neural_network_activate()

@@ -9,16 +9,17 @@ CFLAGS = -Wall -Wextra -Werror -std=c99 -O3
 # Linker options
 LDFLAGS = -pthread -export-dynamic
 
-SDLLIB = `pkg-config --cflags --libs sdl` -lSDL_image
-GTKLIB = `pkg-config --cflags --libs gtk+-3.0`
-MATHLIB = -lm
+SDL = `pkg-config --cflags --libs sdl` -lSDL_image
+GTK = `pkg-config --cflags --libs gtk+-3.0`
+GSPELL = `pkg-config --cflags --libs gspell-1`
+LM = -lm
 
 SRC = $(shell find src -type f -name "*.c")
 
 all: $(TARGET) 
 
 ocr: $(SRC)
-	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
+	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDL) $(GTK) $(GSPELL) $(LM)
 
 .PHONY: clean
 clean:
