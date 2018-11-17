@@ -32,7 +32,7 @@ size_t TextLines_ycut_find(TextLine textLines[],
         size_t nbPixelOnThisLine=0;
         for(size_t x=0; x < width; x++)
         {
-            nbPixelOnThisLine += binarized_image[y+x*height];
+            nbPixelOnThisLine += binarized_image[y*width+x];
         }
         if (!wasLine && nbPixelOnThisLine)
         {
@@ -85,12 +85,13 @@ size_t Characters_find_quick_bounds(TextLine textLine,
     size_t nbCharactersFound = 0;
     int wasChar=0;
     size_t startingPoint=0;
+    (void)img_height;
     for(size_t x=0; x < img_width; x++)
     {
         size_t nbPixelOnThisLine = 0;
         for(size_t y=upperBound; y<=lowerBound; y++)
         {
-            nbPixelOnThisLine += binarized_image[y+x*img_height];
+            nbPixelOnThisLine += binarized_image[y*img_width+x];
         }
         if (!wasChar && nbPixelOnThisLine)
         {
@@ -187,10 +188,8 @@ int main()
             Uint8 r, g, b;
             SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
             Uint8 average = 0.3*r + 0.59*g + 0.11*b;
-            img_bin_matrix[y+x*img_height] = (average <= 255/2)?1:0;
-            //printf("%zu",img_bin_matrix[y+x*img_height]);
+            img_bin_matrix[y*img_width+x] = (average <= 255/2)?1:0;
         }
-        //printf("\n");
     }
 
     //--- Get Lines ---------------------------------------------
