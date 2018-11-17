@@ -5,6 +5,7 @@ EPITA - S3 - API - O.C.R software by 4pm
 * SDL : libsdl2-2.0-0 libsdl2-dev
 * SDL-image : libsdl2-image-2.0-0 libsdl2-image-dev
 * gtk : libgtk-3-dev libgtk3-0
+* gspell : libgspell-1-1 libgspell-1-dev
 
 ## Usage
 1. Clone the repository : `git clone https://github.com/4pm-nomnom/OCR.git`
