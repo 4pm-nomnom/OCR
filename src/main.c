@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
             Uint32 pixel = get_pixel(image_surface, x, y);
             Uint8 r, g, b;
             SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
-            img_bin_matrix[y+x*img_height] = (r==0)?1:0;
+            img_bin_matrix[y*img_width+x] = (r==0)?1:0;
         }
     }
 
