@@ -110,10 +110,10 @@ float costhidden2(NeuralXorNet A, float x1, float x2)
 }
 
 
-float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2)
+float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2m int coord)
 {
     // The output using the neuralnet, a
-    float a = ffdnode1(I, H, x1, x2);
+    float a = 0;
     // The wanted one, y(x)
     float yx = speand1(x1,x2);
     //We need the derivative of sigmoid of inputs
@@ -130,7 +130,23 @@ float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2)
     //couldnt handle the case were x1 and  x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
-    float res = ((-1.0f) * (yx) + a ) * out;
+    float res = 0;
+	if (coord == 1)
+	{	// litteraly the derivative according to the bias component;
+		a = ffnode1(I, H, x1, x2) - H.Node1.bias;	
+	}
+	if (coord == 2)
+	{
+		a = ffnode1(I, H, x1, 0);	
+
+	}
+	if (coord == 3)
+	{
+		a = ffnode1(I, H, 0, x2);	
+
+	}
+	res = ((-1.0f) * (yx + a) * out);
+	
     if (x1 == x2 && x2!=0.0f)
     {
         res = (-1.0f) * res;
@@ -142,7 +158,7 @@ float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2)
 float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
 {
     // The output using the neuralnet, a
-    float a = ffdnode2(I, H, x1, x2);
+    float a = 0;
     // The wanted one, y(x)
     float yx = speand2(x1,x2);
     //We need the derivative of sigmoid of inputs
@@ -159,7 +175,22 @@ float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
     //couldnt handle the case were x1 and x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
-    float res = ((-1.0f) * (yx) + a ) * out;
+	if (coord == 1)
+	{	// litteraly the derivative according to the bias component;
+		a = ffnode1(I, H, x1, x2) - H.Node1.bias;	
+	}
+	if (coord == 2)
+	{
+		a = ffnode1(I, H, x1, 0);	
+
+	}
+	if (coord == 3)
+	{
+		a = ffnode1(I, H, 0, x2);	
+
+	}
+	res = ((-1.0f) * (yx + a) * out);
+	
     if (x1 == x2 && x2!=0.0f)
     {
         res = (-1.0f) * res;
@@ -171,7 +202,7 @@ float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
 float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
 {
     // The output using the neuralnet, a
-    float a = ff(H, O);
+    float a = 0;
     // The wanted one, y(x)
     float yx = xorfun(x1, x2);
     //We need the derivative of sigmoid of inputs
@@ -187,7 +218,22 @@ float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
     //couldnt handle the case were x1 and x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
-    float res = ((-1.0f) * (yx) + a ) * out;
+	if (coord == 1)
+	{	// litteraly the derivative according to the bias component;
+		a = ffnode1(I, H, x1, x2) - H.Node1.bias;	
+	}
+	if (coord == 2)
+	{
+		a = ffnode1(I, H, x1, 0);	
+
+	}
+	if (coord == 3)
+	{
+		a = ffnode1(I, H, 0, x2);	
+
+	}
+	res = ((-1.0f) * (yx + a) * out);
+	
     if (x1 == x2 && x2!=0.0f)
     {
         res = (-1.0f) * res;
