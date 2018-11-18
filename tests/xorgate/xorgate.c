@@ -110,7 +110,7 @@ float costhidden2(NeuralXorNet A, float x1, float x2)
 }
 
 
-float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2m int coord)
+float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2, int coord)
 {
     // The output using the neuralnet, a
     float a = 0;
@@ -133,7 +133,10 @@ float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2m int coord)
     float res = 0;
 	if (coord == 1)
 	{	// litteraly the derivative according to the bias component;
-		a = ffnode1(I, H, x1, x2) - H.Node1.bias;	
+   		 float w1 = I.Node1.weight2;
+  		 float w2 = I.Node2.weight2;
+  		 float output =  (-1.0f) * (x1* w1 + x2 * w2);
+         res = 1/ (1 + exp(output));	
 	}
 	if (coord == 2)
 	{
@@ -155,7 +158,7 @@ float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2m int coord)
 }
 
 
-float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
+float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2, int coord)
 {
     // The output using the neuralnet, a
     float a = 0;
@@ -171,13 +174,19 @@ float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
     float sigmoid = 1/(1 + exp(output));
     //sigmoid' = output - outputpower2
     float out = sigmoid * (1 - sigmoid);
+	float res;
     //custom output value, valid in this specific case
     //couldnt handle the case were x1 and x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
 	if (coord == 1)
 	{	// litteraly the derivative according to the bias component;
-		a = ffnode1(I, H, x1, x2) - H.Node1.bias;	
+		//ffnode2 but bias =0;
+   		 float w1 = I.Node1.weight2;
+   		 float w2 = I.Node2.weight2;
+   		 
+   		 float output =  (-1.0f) * (x1* w1 + x2 * w2);
+         res = 1/ (1 + exp(output));	
 	}
 	if (coord == 2)
 	{
@@ -199,7 +208,7 @@ float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2)
 }
 
 
-float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
+float operroro(HiddenLayer H, OutputLayer O, float x1, float x2, int coord)
 {
     // The output using the neuralnet, a
     float a = 0;
@@ -214,23 +223,36 @@ float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
     float sigmoid = 1/(1 + exp(output));
     //sigmoid' = output - outputpower2
     float out = sigmoid * (1 - sigmoid);
+	float res;
     //custom output value, valid in this specific case
     //couldnt handle the case were x1 and x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
 	if (coord == 1)
 	{	// litteraly the derivative according to the bias component;
-		a = ffnode1(I, H, x1, x2) - H.Node1.bias;	
+  		  float w1 = H.Node1.weight;
+  		  float x1 = H.Node1.value;
+ 		  float w2 = H.Node2.weight;
+		  float x2 = H.Node2.value;
+ 		  float output =  (-1.0f) * (x1* w1 + x2 * w2);
+  		  res= 1/ (1 + exp(output));		
 	}
 	if (coord == 2)
 	{
-		a = ffnode1(I, H, x1, 0);	
-
+  		  float w2 = H.Node2.weight;
+		  float x2 = H.Node2.weight;
+  		  float bias = O.bias;
+ 		  float output =  (-1.0f) * ( x2 * w2 + bias);
+  		  res= 1/ (1 + exp(output));		
 	}
 	if (coord == 3)
 	{
-		a = ffnode1(I, H, 0, x2);	
-
+  		  float w1 = H.Node1.weight;
+		  float x1 = H.Node1.weight;
+  		  float bias = O.bias;
+ 		  float output =  (-1.0f) * ( x1 * w1 + bias);
+  		  res= 1/ (1 + exp(output));		
+		
 	}
 	res = ((-1.0f) * (yx + a) * out);
 	
@@ -246,11 +268,23 @@ float operroro(HiddenLayer H, OutputLayer O, float x1, float x2)
 HiddenLayer stcout(HiddenLayer H, OutputLayer O,
         float rate, float x1, float x2)
 {
-    float er = operroro(H, O, x1, x2);
+    float er = operroro(H, O, x1, x2, 1);
     H.Node1.weight = H.Node1.weight - rate * er;
     H.Node2.weight = H.Node2.weight - rate * er;
     H.Node1.bias = H.Node1.bias - rate * er;
     H.Node2.bias = H.Node2.bias - rate * er;
+    er = operroro(H, O, x1, x2, 2);
+    H.Node1.weight = H.Node1.weight - rate * er;
+    H.Node2.weight = H.Node2.weight - rate * er;
+    H.Node1.bias = H.Node1.bias - rate * er;
+    H.Node2.bias = H.Node2.bias - rate * er;
+    er = operroro(H, O, x1, x2, 3);
+    H.Node1.weight = H.Node1.weight - rate * er;
+    H.Node2.weight = H.Node2.weight - rate * er;
+    H.Node1.bias = H.Node1.bias - rate * er;
+    H.Node2.bias = H.Node2.bias - rate * er;
+
+
     return H;
 }
 
@@ -258,12 +292,25 @@ HiddenLayer stcout(HiddenLayer H, OutputLayer O,
 // Corrects the NeuralNetw rightmost layers
 InputLayer stchid(InputLayer I, HiddenLayer H, float rate, float x1, float x2)
 {
-    float er1 = operrorh1(I, H, x1, x2);
-    float er2 = operrorh2(I, H, x1, x2);
+    float er1 = operrorh1(I, H, x1, x2, 1);
+    float er2 = operrorh2(I, H, x1, x2, 1);
     I.Node1.weight1 = I.Node1.weight1 - rate * er1;
     I.Node1.weight2 = I.Node1.weight2 - rate * er1;
     I.Node2.weight1 = I.Node2.weight1 - rate * er2;
     I.Node2.weight2 = I.Node2.weight2 - rate * er2;
+    er1 = operrorh1(I, H, x1, x2, 2);
+    er2 = operrorh2(I, H, x1, x2, 2);
+    I.Node1.weight1 = I.Node1.weight1 - rate * er1;
+    I.Node1.weight2 = I.Node1.weight2 - rate * er1;
+    I.Node2.weight1 = I.Node2.weight1 - rate * er2;
+    I.Node2.weight2 = I.Node2.weight2 - rate * er2;
+    er1 = operrorh1(I, H, x1, x2, 3);
+    er2 = operrorh2(I, H, x1, x2, 3);
+    I.Node1.weight1 = I.Node1.weight1 - rate * er1;
+    I.Node1.weight2 = I.Node1.weight2 - rate * er1;
+    I.Node2.weight1 = I.Node2.weight1 - rate * er2;
+    I.Node2.weight2 = I.Node2.weight2 - rate * er2;
+
     return I;
 }
 
