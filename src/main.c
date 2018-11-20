@@ -15,6 +15,8 @@
 #define MAX_NUMBER_OF_CHARACTERS 200
 
 GtkImage *g_image_main;
+GtkWidget *image_box;
+GdkPixbuf *pixbuf;
 GtkWidget *g_lbl_image_name;
 GtkFileChooser *g_file_selection;
 GtkFileChooser *g_file_save;
@@ -43,6 +45,8 @@ gboolean isactive_show_preprocessing;
 gboolean isactive_show_segmentation;
 gboolean isactive_spell_check_en;
 gboolean isactive_spell_check_fr;
+int zoom_bestfit = 1;
+int zoom_largefit = 0;
 
 void gchar_to_text_view(GtkTextView *text_view, gchar *text);
 
@@ -62,6 +66,8 @@ int main(int argc, char *argv[])
     // get pointers to objects
     g_image_main = GTK_IMAGE(
             gtk_builder_get_object(builder, "image_main"));
+    image_box = GTK_WIDGET(
+            gtk_builder_get_object(builder, "image_box"));
     g_lbl_image_name = GTK_WIDGET(
             gtk_builder_get_object(builder,"lbl_image_name"));
     g_text_result = GTK_TEXT_VIEW(
@@ -284,6 +290,51 @@ void gchar_to_text_view(GtkTextView *text_view, gchar *text)
     gtk_text_buffer_set_text(textBuffer, text, strlen(text));
 }
 
+void on_window_main_size_allocate()
+{
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(
+        image_box,
+        &allocation);
+    int desired_width = allocation.width;
+    int desired_height = allocation.height;
+    float r_box = (float)desired_height/desired_width;
+    float r_image = (float)gdk_pixbuf_get_height(pixbuf)/
+        gdk_pixbuf_get_width(pixbuf);
+    if (zoom_bestfit)
+    {
+        if (r_box > r_image)
+        {
+            desired_width -= 4;
+            desired_height = (int)(desired_width * r_image);
+        }
+        else
+        {
+            desired_height -= 4;
+            desired_width = (int)(desired_height / r_image);
+        }
+        gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+            desired_width, desired_height, GDK_INTERP_BILINEAR));
+    }
+    else if (zoom_largefit)
+    {
+        if (r_box < r_image)
+        {
+            desired_width -= 4;
+            desired_height = (int)(desired_width * r_image);
+        }
+        else
+        {
+            desired_height -= 4;
+            desired_width = (int)(desired_height / r_image);
+        }
+        gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+            desired_width, desired_height, GDK_INTERP_BILINEAR));
+    }
+    else
+        gtk_image_set_from_pixbuf(g_image_main, pixbuf);
+}
+
 //-----------------------------------------------------------------------------
 //--LOADING-WINDOW
 void window_loading_create()
@@ -319,7 +370,8 @@ void on_btn_file_selection_cancel_clicked()
 void on_btn_file_selection_open_clicked()
 {
     gchar *image_path = gtk_file_chooser_get_filename(g_file_selection);
-    gtk_image_set_from_file(g_image_main, image_path);
+    pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
+    on_window_main_size_allocate();
 
     //TODO change lbl_image_name format
     gsize maxlength = 12;
@@ -546,6 +598,28 @@ void on_menu_file_quit_activate()
     gtk_main_quit();
 }
 
+
+void on_menu_view_best_fit_activate()
+{
+    zoom_bestfit = 1;
+    zoom_largefit = 0;
+    on_window_main_size_allocate();
+}
+
+void on_menu_view_large_fit_activate()
+{
+    zoom_bestfit = 0;
+    zoom_largefit = 1;
+    on_window_main_size_allocate();
+}
+
+void on_menu_view_normal_size_activate()
+{
+    zoom_bestfit = 0;
+    zoom_largefit = 0;
+    on_window_main_size_allocate();
+}
+
 void on_menu_view_zoom_in_activate()
 {
     //TODO
@@ -556,18 +630,6 @@ void on_menu_view_zoom_out_activate()
 {
     //TODO
     gchar_to_text_view(g_text_result, "Zoom Out! (not implemented yet ...)\n");
-}
-
-void on_menu_view_normal_size_activate()
-{
-    //TODO
-    gchar_to_text_view(g_text_result, "Normal size image! (not implemented yet ...)\n");
-}
-
-void on_menu_view_best_fit_activate()
-{
-    //TODO
-    gchar_to_text_view(g_text_result, "Best fit! (not implemented yet ...)\n");
 }
 
 void on_menu_tools_deskew_activate()
