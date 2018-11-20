@@ -592,9 +592,10 @@ void on_menu_tools_neural_network_activate()
 
 void on_menu_help_help_activate()
 {
-    int fail_open_url =
-        system("sensible-browser https://github.com/4pm-nomnom/OCR");
-    if (fail_open_url)
+    int opened_url =
+        g_app_info_launch_default_for_uri(
+            "http://github.com/4pm-nomnom/OCR", NULL, NULL);
+    if (!opened_url)
     {
         printf("failed to open the help page... open it directly :\n");
         printf("https://github.com/4pm-nomnom/OCR\n");
