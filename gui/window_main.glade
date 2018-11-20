@@ -28,6 +28,7 @@
     <property name="default_height">450</property>
     <property name="icon">../docs/logo_4pm.png</property>
     <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
+    <signal name="size-allocate" handler="on_window_main_size_allocate" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -153,6 +154,16 @@
                         <signal name="activate" handler="on_menu_view_best_fit_activate" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_view_large_fit">
+                        <property name="label" translatable="yes">Large Fit</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="image">no_image</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_menu_view_large_fit_activate" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -250,7 +261,7 @@
             <property name="can_focus">False</property>
             <property name="column_homogeneous">True</property>
             <child>
-              <object class="GtkViewport">
+              <object class="GtkViewport" id="image_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="margin_left">5</property>
@@ -272,7 +283,7 @@
                           <object class="GtkImage" id="image_main">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="icon_name">image-missing</property>
+                            <property name="pixbuf">../docs/logo_4pm.png</property>
                           </object>
                         </child>
                       </object>

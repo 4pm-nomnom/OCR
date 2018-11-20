@@ -13,15 +13,15 @@ SDLLIB = `pkg-config --cflags --libs sdl` -lSDL_image
 GTKLIB = `pkg-config --cflags --libs gtk+-3.0`
 MATHLIB = -lm
 
-SRC_GUI_TEST = $(shell find gui_test -type f -name "*.c")
+SRC_GUI = $(shell find gui -type f -name "*.c")
 
 SRC_NN = $(shell find xorgate -type f -name "*.c") # change the src directory here !
 
 
 all: $(TARGET)
 
-testgui: $(SRC_GUI_TEST)
-	$(CC) -o $@ $(SRC_GUI_TEST) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
+testgui: $(SRC_GUI)
+	$(CC) -o $@ $(SRC_GUI) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
 
 testnn: $(SRC_NN)
 	$(CC) -o $@ $(SRC_NN) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
