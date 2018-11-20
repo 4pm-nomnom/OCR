@@ -4,7 +4,7 @@
 
 GtkImage *g_image_main;
 GtkWidget *image_box;
-//GdkPixbuf *pixbuf;
+GdkPixbuf *pixbuf;
 
 int main(int argc, char *argv[])
 {
@@ -24,12 +24,12 @@ int main(int argc, char *argv[])
 
     image_box = GTK_WIDGET(gtk_builder_get_object(builder, "image_box"));
 
+    pixbuf = gdk_pixbuf_new_from_file("../samples/specifications.png", NULL);
+    gtk_image_set_from_pixbuf(g_image_main, pixbuf);
+    
     g_object_unref(builder);
 
     gtk_widget_show(window);
-
-    //pixbuf = gdk_pixbuf_copy(gtk_image_get_pixbuf(g_image_main));
-
     gtk_main();
 
     return EXIT_SUCCESS;
@@ -49,8 +49,6 @@ void on_window_main_size_allocate()
         &allocation);
     int desired_width = allocation.width;
     int desired_height = allocation.height;
-    printf("w : %i / h : %i\n", desired_width, desired_height);
-    GdkPixbuf *pixbuf = gtk_image_get_pixbuf(g_image_main);
     float r_box = (float)desired_height/desired_width;
     float r_image = (float)gdk_pixbuf_get_height(pixbuf)/
         gdk_pixbuf_get_width(pixbuf);
@@ -62,8 +60,6 @@ void on_window_main_size_allocate()
     {
         desired_width = (int)(desired_height / r_image);
     }
-    pixbuf = gdk_pixbuf_scale_simple(pixbuf,
-        desired_width, desired_height, GDK_INTERP_BILINEAR);
-
-    gtk_image_set_from_pixbuf(g_image_main, pixbuf);
+    gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+        desired_width, desired_height, GDK_INTERP_BILINEAR));
 }
