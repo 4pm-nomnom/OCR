@@ -5,6 +5,8 @@
 GtkImage *g_image_main;
 GtkWidget *image_box;
 GdkPixbuf *pixbuf;
+int zoom_bestfit = 1;
+int zoom_largefit = 0;
 
 int main(int argc, char *argv[])
 {
@@ -24,9 +26,9 @@ int main(int argc, char *argv[])
 
     image_box = GTK_WIDGET(gtk_builder_get_object(builder, "image_box"));
 
-    pixbuf = gdk_pixbuf_new_from_file("../samples/specifications.png", NULL);
+    pixbuf = gdk_pixbuf_new_from_file("../samples/hey.png", NULL);
     gtk_image_set_from_pixbuf(g_image_main, pixbuf);
-    
+
     g_object_unref(builder);
 
     gtk_widget_show(window);
@@ -52,14 +54,57 @@ void on_window_main_size_allocate()
     float r_box = (float)desired_height/desired_width;
     float r_image = (float)gdk_pixbuf_get_height(pixbuf)/
         gdk_pixbuf_get_width(pixbuf);
-    if (r_box > r_image)
-    { 
-        desired_height = (int)(desired_width * r_image);
+    if (zoom_bestfit)
+    {
+        if (r_box > r_image)
+        {
+            desired_width -= 4;
+            desired_height = (int)(desired_width * r_image);
+        }
+        else
+        {
+            desired_height -= 4;
+            desired_width = (int)(desired_height / r_image);
+        }
+        gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+            desired_width, desired_height, GDK_INTERP_BILINEAR));
+    }
+    else if (zoom_largefit)
+    {
+        if (r_box < r_image)
+        {
+            desired_width -= 4;
+            desired_height = (int)(desired_width * r_image);
+        }
+        else
+        {
+            desired_height -= 4;
+            desired_width = (int)(desired_height / r_image);
+        }
+        gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+            desired_width, desired_height, GDK_INTERP_BILINEAR));
     }
     else
-    {
-        desired_width = (int)(desired_height / r_image);
-    }
-    gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
-        desired_width, desired_height, GDK_INTERP_BILINEAR));
+        gtk_image_set_from_pixbuf(g_image_main, pixbuf);
+}
+
+void on_btn_bestfit_clicked()
+{
+    zoom_bestfit = 1;
+    zoom_largefit = 0;
+    on_window_main_size_allocate();
+}
+
+void on_btn_largefit_clicked()
+{
+    zoom_bestfit = 0;
+    zoom_largefit = 1;
+    on_window_main_size_allocate();
+}
+
+void on_btn_normal_size_clicked()
+{
+    zoom_bestfit = 0;
+    zoom_largefit = 0;
+    on_window_main_size_allocate();
 }
