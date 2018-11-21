@@ -374,8 +374,13 @@ void on_btn_file_selection_cancel_clicked()
 
 void on_btn_file_selection_open_clicked()
 {
+    zoom_bestfit = 1;
+    zoom_largefit = 0;
+    zoom_normal = 0;
+
     gchar *image_path = gtk_file_chooser_get_filename(g_file_selection);
     pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
+
     on_window_main_size_allocate();
 
     //TODO change lbl_image_name format
