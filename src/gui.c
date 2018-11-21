@@ -47,6 +47,7 @@ gboolean isactive_spell_check_en;
 gboolean isactive_spell_check_fr;
 int zoom_bestfit = 1;
 int zoom_largefit = 0;
+int zoom_normal = 0;
 
 void gchar_to_text_view(GtkTextView *text_view, gchar *text);
 
@@ -334,7 +335,7 @@ void on_window_main_size_allocate()
         gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
             desired_width, desired_height, GDK_INTERP_BILINEAR));
     }
-    else
+    else if (zoom_normal)
         gtk_image_set_from_pixbuf(g_image_main, pixbuf);
     gtk_widget_queue_resize(window_main);
 }
@@ -607,6 +608,7 @@ void on_menu_view_best_fit_activate()
 {
     zoom_bestfit = 1;
     zoom_largefit = 0;
+    zoom_normal = 0;
     on_window_main_size_allocate();
 }
 
@@ -614,6 +616,7 @@ void on_menu_view_large_fit_activate()
 {
     zoom_bestfit = 0;
     zoom_largefit = 1;
+    zoom_normal = 0;
     on_window_main_size_allocate();
 }
 
@@ -621,19 +624,44 @@ void on_menu_view_normal_size_activate()
 {
     zoom_bestfit = 0;
     zoom_largefit = 0;
+    zoom_normal = 1;
     on_window_main_size_allocate();
 }
 
 void on_menu_view_zoom_in_activate()
 {
-    //TODO
-    gchar_to_text_view(g_text_result, "Zoom in! (not implemented yet ...)\n");
+    zoom_bestfit = 0;
+    zoom_largefit = 0;
+    zoom_normal = 0;
+
+    GdkPixbuf *current = gtk_image_get_pixbuf(g_image_main);
+    float r_image = (float)gdk_pixbuf_get_height(pixbuf)/
+        gdk_pixbuf_get_width(pixbuf);
+    int desired_width =  gdk_pixbuf_get_width(current) + 40;
+    int desired_height = (int)(desired_width * r_image);
+    gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+        desired_width, desired_height, GDK_INTERP_BILINEAR));
+
+    gtk_widget_queue_resize(window_main);
 }
 
 void on_menu_view_zoom_out_activate()
 {
-    //TODO
-    gchar_to_text_view(g_text_result, "Zoom Out! (not implemented yet ...)\n");
+    zoom_bestfit = 0;
+    zoom_largefit = 0;
+    zoom_normal = 0;
+
+    GdkPixbuf *current = gtk_image_get_pixbuf(g_image_main);
+    float r_image = (float)gdk_pixbuf_get_height(pixbuf)/
+        gdk_pixbuf_get_width(pixbuf);
+    int desired_width =  gdk_pixbuf_get_width(current) - 40;
+    if (desired_width < 40)
+        desired_width += 40;
+    int desired_height = (int)(desired_width * r_image);
+    gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
+        desired_width, desired_height, GDK_INTERP_BILINEAR));
+
+    gtk_widget_queue_resize(window_main);
 }
 
 void on_menu_tools_deskew_activate()
