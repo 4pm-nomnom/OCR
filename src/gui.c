@@ -76,6 +76,9 @@ void launch_ocr(int argc, char *argv[])
     cb_advanced = GTK_TOGGLE_BUTTON(
             gtk_builder_get_object(builder, "cb_advanced"));
 
+    //zoom key
+    gtk_widget_add_events(image_box, GDK_KEY_PRESS_MASK);
+
     //initialize inline gspell for the textView
     GspellTextView *gspell_view;
     gspell_view = gspell_text_view_get_from_gtk_text_view (g_text_result);
@@ -90,6 +93,7 @@ void launch_ocr(int argc, char *argv[])
     gtk_main();
 
 }
+
 
 //-----------------------------------------------------------------------------
 //--MAIN-FUNCTION-CONVERT
@@ -704,4 +708,20 @@ void on_menu_help_help_activate()
 void on_menu_help_about_activate()
 {
     window_about_create();
+}
+
+gboolean on_image_main_key_press_event(GtkWidget *widget, GdkEventKey *event,
+    gpointer data)
+{
+    (void)widget;
+    (void)data;
+    if (event->keyval == GDK_KEY_plus){
+        on_menu_view_zoom_in_activate();
+        return TRUE;
+    }
+    else if (event->keyval == GDK_KEY_minus){
+        on_menu_view_zoom_out_activate();
+        return TRUE;
+    }
+    return FALSE;
 }
