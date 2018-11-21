@@ -336,6 +336,7 @@ void on_window_main_size_allocate()
     }
     else
         gtk_image_set_from_pixbuf(g_image_main, pixbuf);
+    gtk_widget_queue_resize(window_main);
 }
 
 //-----------------------------------------------------------------------------
