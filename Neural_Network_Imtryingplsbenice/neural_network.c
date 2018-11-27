@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include "setting_variables.h"
 
 double sum_weights(double* input, double* weight, size_t len) 
 // c'est la fonction de base pour caculer ce que ton neuronne doit calculer en gros,
@@ -33,26 +34,21 @@ double sigmoid_prime(double val)
 }
 
 
-double* feedforward_layer(double* input, double** layer, size_t nbNeurones, size_t nbWeights)
+void feedforward_layer(double* input, double** layer, size_t nbNeurones, size_t nbWeights)
 {
-	double* output = malloc (sizeof(double) * nbNeurones);
-	// le tableau d'output passe dans la sigmoid de chacun de tes neuronnes
-	double output_neuron;
-	// bon ta race c'est juste le rendu de ta sigmoid a laquelle on a passe ta sum_weight
+	double* temp = malloc(sizeof(double) * nbNeurones);
 	for (size_t i = 0; i < nbNeurones; ++i)
 	// Tu fais ton iteration sur chacun des neuronnes de ta couche
-		output_neuron = sigmoid(sum_weights(input, layer[i], nbWeights));
+		temp[i] = sigmoid(sum_weights(input, layer[i], nbWeights));
 		// si t'as pas compris cette partie t'es debile et t'as mon numero
-	return output;
-	// bah tu return ce que t'as trouve tu vas pas lacher ca dans la nature hein
+	input = temp;
+	free(temp);
 }
 
-double* feedforward(double* input, double*** network, size_t nblayers)
+void feedforward(double* input, double*** network, size_t nblayer)
 {
-	size_t nbNeurones;
-	double* input_1 = input;
 	for (size_t i = 0; i < nblayer; ++i)
-		 input_1 = feedforward_layer(input_1, network[i], sizeof(network[i]) / sizeof(double*), sizeof(input)/sizeof(double));
+		feedforward_layer(input, network[i], sizeof(network[i]) / sizeof(double*), sizeof(input)/sizeof(double));
 }
 
 
@@ -81,8 +77,13 @@ double diff_weight(double learning_rate, double urgence, double input)
 void backprop_node(double* node, size_t len, double* input, double expected, double output)
 {
 	node[0] += diff_bias(0.3, urgence(expected, output));
+	printf("%f ", node[0]);
 	for (size_t i = 0; i < len; ++i)
-		node[i] += diff_weight(0.3, urgence(exoected, output), input[i-1]);
+		{
+			node[i] += diff_weight(0.3, urgence(expected, output), input[i-1]);
+			printf("%f ", node[i]);
+		}
+	printf("\n");
 }
 
 
@@ -92,29 +93,41 @@ void backprop_layer(double** layer,size_t len_node, size_t len, double* input, d
 		backprop_node(layer[i], len_node, input, expected[i], output[i]);
 }
 
+void backprop(double*** network, double* expected, double* output, double* input, size_t nblayers)
+{
+	for (size_t i = 0; i < nblayers; ++i)
+		backprop_layer(network[i], sizeof(network[i][0])/sizeof(double), sizeof(network[i]) /sizeof(double*), input, expected, output);
+}
+
 
 void epoch(double*** network, double* input, double* expected)
 {
-	
+	size_t nblayer = sizeof(network)/sizeof(double**);
+	double* output = copy_array(input, sizeof(input) / sizeof(double));
+	feedforward(output, network, nblayer);
+	backprop(network, expected, output, input, nblayer);
+	free(output);
+}
+
 
 int main()
 {
 	srand(time(NULL));
 	double *input = malloc(sizeof(double) * 2);
-	input[0] = 1;
-	input[1] = 0;
-	double** layer_1 = malloc(sizeof(float*) * 2);
-	layer_1[0] = malloc(sizeof(float) * 3);
-	layer_1[1] = malloc(sizeof(float) * 3);
-	fill_array_random(layer_1, 2, 3);
-	double* output_1 = feedforward(input, layer_1, 2, 3);
-	free(input);
-	free(layer_1[0]);
-	free(layer_1[1]);
-	free(layer_1);
-	printf("%f , %f\n", output_1[0], output_1[1]);
-	free(output_1);
-	free()
+	input[0] = (double) 1;
+	input[1] = (double) 1;
+	double ***network = (double***) (malloc(sizeof(double**) * 2));
+	network[0] = (double**) (malloc((sizeof(double*) * 2)));
+	network[1] = (double**) (malloc((sizeof(double*))));
+	network[0][0] = (double*) (malloc(sizeof(double) * 3));
+	network[0][1] = (double*) (malloc(sizeof(double) * 3));
+	network[1][0] = (double*) (malloc((sizeof(double)) * 3));
+	fill_array_random(network[0], 2, 3);
+	fill_array_random(network[1], 1, 3);
+	double* expected = malloc(sizeof(double));
+	expected[0] = 0;
+	for (size_t i = 0; i < 5000; ++i)
+		epoch(network, input, expected);
 	return 0;
 }
 
