@@ -38,21 +38,30 @@ double* feedforward(double* input, double** layer, size_t nbNeurones, size_t nbW
 	// bon ta race c'est juste le rendu de ta sigmoid a laquelle on a passe ta sum_weight
 	for (size_t i = 0; i < nbNeurones; ++i)
 	// Tu fais ton iteration sur chacun des neuronnes de ta couche
-	{
 		output_neuron = sigmoid(sum_weights(input, layer[i], nbWeights));
-		output[i] = output_neuron > 0 ? output_neuron : 0;
 		// si t'as pas compris cette partie t'es debile et t'as mon numero
-	}
 	return output;
 	// bah tu return ce que t'as trouve tu vas pas lacher ca dans la nature hein
 }
 
+
+// Fonction pour remplir une matrice de valeur au hasard.
 void fill_array_random(double** layer, size_t _i, size_t _j)
 {
 	for (size_t i = 0; i < _i; ++i)
 		for (size_t j = 0; j < _j; ++j)
 			layer[i][j] = (double) rand() / (double) RAND_MAX;
 }
+
+double* cost(double* output, double* expected, size_t len)
+{
+	double* error_vect = malloc(sizeof(double) * len);
+	for (size_t i = 0; i < len; ++i)
+		error_vect[i] = pow((expected[i] - output[i]), 2);
+	return error_vect; 
+}
+
+
 
 
 
@@ -73,6 +82,7 @@ int main()
 	free(layer_1);
 	printf("%f , %f\n", output_1[0], output_1[1]);
 	free(output_1);
+	free()
 	return 0;
 }
 
