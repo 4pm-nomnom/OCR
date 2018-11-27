@@ -20,20 +20,20 @@ double sum_weights(double* input, double* weight, size_t len)
 	return sum;
 }
 
-
+//Computes the sigmoid of a value
 double sigmoid(double val)
 // c'est la fonction sigmoid tu vas pas me faire chier hein
 {
 	return 1 / (1 + exp(-val));
 }
 
-
+//Computes the sigmoid dash of a value, to use for emergency
 double sigmoid_prime(double val)
 {
 	return sigmoid(val) * (1-(sigmoid(val)));
 }
 
-
+//Applies feedworward to a whole layer
 void feedforward_layer(double* input, double** layer, size_t nbNeurones, size_t nbWeights)
 {
 	double* temp = malloc(sizeof(double) * nbNeurones);
@@ -45,6 +45,8 @@ void feedforward_layer(double* input, double** layer, size_t nbNeurones, size_t 
 	free(temp);
 }
 
+
+//Applies feedforward to the whole neural net
 void feedforward(double* input, double*** network, size_t nblayer)
 {
 	for (size_t i = 0; i < nblayer; ++i)
@@ -58,22 +60,28 @@ void feedforward(double* input, double*** network, size_t nblayer)
 }*/
 
 
+//Computes the emergency to correct a node value (more or less a part of the gradient of its error)
 double urgence(double expected, double output)
 {
 	return -1 * sigmoid_prime(output) * (output - expected);
 }
 
+
+//Computes the difference applied to a node bias
 double diff_bias(double learning_rate, double urgence)
 {
 	return learning_rate * urgence;
 }
 
 
+
+//Computes the difference of a weight at a given stage
 double diff_weight(double learning_rate, double urgence, double input)
 {
 	return learning_rate * urgence * input;
 }
 
+//Computes the difference applied to a node and its weights
 void backprop_node(double* node, size_t len, double* input, double expected, double output)
 {
 	node[0] += diff_bias(0.3, urgence(expected, output));
@@ -86,13 +94,14 @@ void backprop_node(double* node, size_t len, double* input, double expected, dou
 	printf("\n");
 }
 
-
+//Applies the backpropagation on all the nodes of a layer
 void backprop_layer(double** layer,size_t len_node, size_t len, double* input, double* expected, double* output)
 {
 	for (size_t i = 0; i < len; i++)
 		backprop_node(layer[i], len_node, input, expected[i], output[i]);
 }
 
+//Applies the backprop on the whole network
 void backprop(double*** network, double* expected, double* output, double* input, size_t nblayers)
 {
 	for (size_t i = 0; i < nblayers; ++i)
@@ -100,6 +109,7 @@ void backprop(double*** network, double* expected, double* output, double* input
 }
 
 
+//Iterates the feedforward then correct the neural network
 void epoch(double*** network, double* input, double* expected)
 {
 	size_t nblayer = sizeof(network)/sizeof(double**);
@@ -110,6 +120,9 @@ void epoch(double*** network, double* input, double* expected)
 }
 
 
+
+//to replace by fonction
+//Here instantiates matrices
 int main()
 {
 	srand(time(NULL));
