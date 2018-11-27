@@ -76,11 +76,11 @@ double diff_weight(double learning_rate, double urgence, double input)
 
 void backprop_node(double* node, double* input, double expected, double output, size_t nbWeight)
 {
-	node[0] += diff_bias(0.3, urgence(expected, output));
+	node[0] += diff_bias(0.03, urgence(expected, output));
 	printf("bias = %f\n", node[0]);
 	for (size_t i = 1; i < nbWeight; ++i)
 		{
-			node[i] += diff_weight(0.3, urgence(expected, output), input[i-1]);
+			node[i] += diff_weight(0.03, urgence(expected, output), input[i-1]);
 			printf("weight i = %f ", node[i]);
 		}
 	printf("\n");
