@@ -44,7 +44,6 @@ double* feedforward(double* input, double** layer, size_t nbNeurones, size_t nbW
 	// bah tu return ce que t'as trouve tu vas pas lacher ca dans la nature hein
 }
 
-
 // Fonction pour remplir une matrice de valeur au hasard.
 void fill_array_random(double** layer, size_t _i, size_t _j)
 {
