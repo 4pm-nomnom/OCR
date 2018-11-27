@@ -19,13 +19,9 @@ void fill_array_random(double** layer, size_t _i, size_t _j)
 
 // copier une matrice
 
-double* copy_array(double* arr, size_t len)
+void copy_array(double* arr, size_t len, double* copy)
 {
-	double* output = malloc(sizeof(arr));
 	for (size_t i = 0; i < len; ++i)
-	{
-		output[i] = arr[i];
-	}
-	return output;
+		copy[i] = arr[i];
 }
 

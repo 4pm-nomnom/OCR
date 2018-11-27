@@ -24,31 +24,34 @@ double sum_weights(double* input, double* weight, size_t nbWeight)
 double sigmoid(double val)
 // c'est la fonction sigmoid tu vas pas me faire chier hein
 {
-	return 1 / (1 + exp(-val));
+	double sigmoid = 1.0 / (1.0 + exp(-val));
+	return sigmoid;
 }
 
 
 double sigmoid_prime(double val)
 {
-	return sigmoid(val) * (1-(sigmoid(val)));
+	return sigmoid(val) * (1.0-(sigmoid(val)));
 }
 
 
-void feedforward_layer(double* input, double** layer, size_t nbNeurones)
+double* feedforward_layer(double* input, double** layer, size_t nbNeurones)
 {
 	double* temp = malloc(sizeof(double) * nbNeurones);
 	for (size_t i = 0; i < nbNeurones; ++i)
 	// Tu fais ton iteration sur chacun des neuronnes de ta couche
 		temp[i] = sigmoid(sum_weights(input, layer[i], nbweights[i]));
 		// si t'as pas compris cette partie t'es debile et t'as mon numero
-	input = temp;
-	free(temp);
+	return temp;
 }
 
-void feedforward(double* input, double*** network, size_t nbLayers)
+double* feedforward(double* input, double*** network, size_t nbLayers)
 {
 	for (size_t i = 0; i < nbLayers; ++i)
-		feedforward_layer(input, network[i], nbneurones[i]);
+	{
+		input = feedforward_layer(input, network[i], nbneurones[i]);
+	}
+	return input;
 }
 
 
@@ -60,7 +63,9 @@ void feedforward(double* input, double*** network, size_t nbLayers)
 
 double urgence(double expected, double output)
 {
-	return -1 * sigmoid_prime(output) * (output - expected);
+	double urgence = -1.0 * sigmoid_prime(output) * (output - expected);
+	//printf("Output = %f\n", output);
+	return urgence;
 }
 
 double diff_bias(double learning_rate, double urgence)
@@ -77,20 +82,21 @@ double diff_weight(double learning_rate, double urgence, double input)
 void backprop_node(double* node, double* input, double expected, double output, size_t nbWeight)
 {
 	node[0] += diff_bias(0.03, urgence(expected, output));
-	printf("bias = %f\n", node[0]);
+	//printf("bias = %f\n", node[0]);
 	for (size_t i = 1; i < nbWeight; ++i)
 		{
 			node[i] += diff_weight(0.03, urgence(expected, output), input[i-1]);
-			printf("weight i = %f ", node[i]);
+	//		printf("weight i = %f ", node[i]);
 		}
-	printf("\n");
 }
 
 
 void backprop_layer(double** layer, double* input, double* expected, double* output, size_t nbNeurones)
 {
 	for (size_t i = 0; i < nbNeurones; i++)
+	{
 		backprop_node(layer[i], input, expected[i], output[i], nbweights[i]);
+	}
 }
 
 void backprop(double*** network, double* expected, double* output, double* input, size_t nblayer)
@@ -102,8 +108,9 @@ void backprop(double*** network, double* expected, double* output, double* input
 
 void epoch(double*** network, double* input, double* expected)
 {
-	double* output = copy_array(input, 2);
-	feedforward(output, network, nblayer);
+	double* output = malloc(2 * sizeof(double));
+	copy_array(input, 2, output);
+	output = feedforward(output, network, nblayer);
 	backprop(network, expected, output, input, nblayer);
 	free(output);
 }
@@ -127,6 +134,10 @@ int main()
 	expected[0] = 0;
 	for (size_t i = 0; i < 5000; ++i)
 		epoch(network, input, expected);
+	input[0] = 0;
+	input[1] = 1;
+	expected[0] = 1;
+	epoch(network, input, expected);
 	return 0;
 }
 
