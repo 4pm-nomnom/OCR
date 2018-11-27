@@ -47,6 +47,14 @@ double* feedforward_layer(double* input, double** layer, size_t nbNeurones, size
 	// bah tu return ce que t'as trouve tu vas pas lacher ca dans la nature hein
 }
 
+double* feedforward(double* input, double*** network, size_t nblayers)
+{
+	size_t nbNeurones;
+	double* input_1 = input;
+	for (size_t i = 0; i < nblayer; ++i)
+		 input_1 = feedforward_layer(input_1, network[i], sizeof(network[i]) / sizeof(double*), sizeof(input)/sizeof(double));
+}
+
 
 /*double cost(double expected, double output)
 {
@@ -85,15 +93,9 @@ void backprop_layer(double** layer,size_t len_node, size_t len, double* input, d
 }
 
 
-void modif_weights(double* neuron, double input*, double* expected, double* output)
+void epoch(double*** network, double* input, double* expected)
 {
-	double urgence = 
-	neuron[0] += urgence;
-}
-
-
-
-
+	
 
 int main()
 {
