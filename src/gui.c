@@ -376,25 +376,44 @@ void on_btn_file_selection_cancel_clicked()
     gtk_widget_destroy(window_file_selection);
 }
 
+gboolean file_isimage(gchar *file_path)
+{
+    return (
+        g_str_has_suffix(file_path, ".jpg") ||
+        g_str_has_suffix(file_path, ".png") ||
+        g_str_has_suffix(file_path, ".bmp")
+        );
+}
+
 void on_btn_file_selection_open_clicked()
 {
-    zoom_bestfit = 1;
-    zoom_largefit = 0;
-    zoom_normal = 0;
 
-    gchar *image_path = gtk_file_chooser_get_filename(g_file_selection);
-    pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
+    //file full path
+    gchar *file_path = gtk_file_chooser_get_filename(g_file_selection);
 
-    on_window_main_size_allocate();
+    if (file_isimage(file_path))
+    {
+        zoom_bestfit = 1;
+        zoom_largefit = 0;
+        zoom_normal = 0;
+        pixbuf = gdk_pixbuf_new_from_file(file_path, NULL);
+        on_window_main_size_allocate();
 
-    //TODO change lbl_image_name format
-    gsize maxlength = 12;
-    gchar *image_name = g_strreverse(image_path); //path is reversed too /care
-    image_name = g_strndup(image_path, maxlength);
-    image_name = g_strreverse(image_name);
-    gchar *dots = "...";
-    image_name = g_strconcat(dots, image_name, NULL);
-    gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
+        gsize maxlength = 12;
+        gchar *image_name = g_strreverse(file_path); //path is reversed too care
+        image_name = g_strndup(file_path, maxlength);
+        image_name = g_strreverse(image_name);
+        if (image_name)
+        {
+            gchar *dots = "...";
+            image_name = g_strconcat(dots, image_name, NULL);
+        }
+        gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
+    }
+    else
+    {
+        //TODO if the file is not an image
+    }
     gtk_widget_destroy(window_file_selection);
 }
 
