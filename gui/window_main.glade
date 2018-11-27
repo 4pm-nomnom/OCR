@@ -263,13 +263,14 @@
             <child>
               <object class="GtkViewport" id="image_box">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
                 <property name="margin_left">5</property>
                 <property name="margin_right">5</property>
                 <property name="margin_top">5</property>
                 <property name="margin_bottom">5</property>
                 <property name="vscroll_policy">natural</property>
                 <property name="shadow_type">out</property>
+                <signal name="key-press-event" handler="on_image_main_key_press_event" swapped="no"/>
                 <child>
                   <object class="GtkScrolledWindow">
                     <property name="visible">True</property>
@@ -282,7 +283,7 @@
                         <child>
                           <object class="GtkImage" id="image_main">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can_focus">True</property>
                             <property name="pixbuf">../docs/logo_4pm.png</property>
                           </object>
                         </child>

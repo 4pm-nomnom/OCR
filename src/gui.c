@@ -76,6 +76,9 @@ void launch_ocr(int argc, char *argv[])
     cb_advanced = GTK_TOGGLE_BUTTON(
             gtk_builder_get_object(builder, "cb_advanced"));
 
+    //zoom key
+    gtk_widget_add_events(image_box, GDK_KEY_PRESS_MASK);
+
     //initialize inline gspell for the textView
     GspellTextView *gspell_view;
     gspell_view = gspell_text_view_get_from_gtk_text_view (g_text_result);
@@ -90,6 +93,7 @@ void launch_ocr(int argc, char *argv[])
     gtk_main();
 
 }
+
 
 //-----------------------------------------------------------------------------
 //--MAIN-FUNCTION-CONVERT
@@ -372,20 +376,44 @@ void on_btn_file_selection_cancel_clicked()
     gtk_widget_destroy(window_file_selection);
 }
 
+gboolean file_isimage(gchar *file_path)
+{
+    return (
+        g_str_has_suffix(file_path, ".jpg") ||
+        g_str_has_suffix(file_path, ".png") ||
+        g_str_has_suffix(file_path, ".bmp")
+        );
+}
+
 void on_btn_file_selection_open_clicked()
 {
-    gchar *image_path = gtk_file_chooser_get_filename(g_file_selection);
-    pixbuf = gdk_pixbuf_new_from_file(image_path, NULL);
-    on_window_main_size_allocate();
 
-    //TODO change lbl_image_name format
-    gsize maxlength = 12;
-    gchar *image_name = g_strreverse(image_path); //path is reversed too /care
-    image_name = g_strndup(image_path, maxlength);
-    image_name = g_strreverse(image_name);
-    gchar *dots = "...";
-    image_name = g_strconcat(dots, image_name, NULL);
-    gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
+    //file full path
+    gchar *file_path = gtk_file_chooser_get_filename(g_file_selection);
+
+    if (file_isimage(file_path))
+    {
+        zoom_bestfit = 1;
+        zoom_largefit = 0;
+        zoom_normal = 0;
+        pixbuf = gdk_pixbuf_new_from_file(file_path, NULL);
+        on_window_main_size_allocate();
+
+        gsize maxlength = 12;
+        gchar *image_name = g_strreverse(file_path); //path is reversed too care
+        image_name = g_strndup(file_path, maxlength);
+        image_name = g_strreverse(image_name);
+        if (image_name)
+        {
+            gchar *dots = "...";
+            image_name = g_strconcat(dots, image_name, NULL);
+        }
+        gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
+    }
+    else
+    {
+        //TODO if the file is not an image
+    }
     gtk_widget_destroy(window_file_selection);
 }
 
@@ -699,4 +727,20 @@ void on_menu_help_help_activate()
 void on_menu_help_about_activate()
 {
     window_about_create();
+}
+
+gboolean on_image_main_key_press_event(GtkWidget *widget, GdkEventKey *event,
+    gpointer data)
+{
+    (void)widget;
+    (void)data;
+    if (event->keyval == GDK_KEY_plus){
+        on_menu_view_zoom_in_activate();
+        return TRUE;
+    }
+    else if (event->keyval == GDK_KEY_minus){
+        on_menu_view_zoom_out_activate();
+        return TRUE;
+    }
+    return FALSE;
 }
