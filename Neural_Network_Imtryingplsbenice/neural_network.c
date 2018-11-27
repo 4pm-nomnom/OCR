@@ -19,18 +19,21 @@ double sum_weights(double* input, double* weight, size_t len)
 	return sum;
 }
 
+
 double sigmoid(double val)
 // c'est la fonction sigmoid tu vas pas me faire chier hein
 {
 	return 1 / (1 + exp(-val));
 }
 
+
 double sigmoid_prime(double val)
 {
 	return sigmoid(val) * (1-(sigmoid(val)));
 }
 
-double* feedforward(double* input, double** layer, size_t nbNeurones, size_t nbWeights)
+
+double* feedforward_layer(double* input, double** layer, size_t nbNeurones, size_t nbWeights)
 {
 	double* output = malloc (sizeof(double) * nbNeurones);
 	// le tableau d'output passe dans la sigmoid de chacun de tes neuronnes
@@ -44,20 +47,48 @@ double* feedforward(double* input, double** layer, size_t nbNeurones, size_t nbW
 	// bah tu return ce que t'as trouve tu vas pas lacher ca dans la nature hein
 }
 
-// Fonction pour remplir une matrice de valeur au hasard.
-void fill_array_random(double** layer, size_t _i, size_t _j)
+
+/*double cost(double expected, double output)
 {
-	for (size_t i = 0; i < _i; ++i)
-		for (size_t j = 0; j < _j; ++j)
-			layer[i][j] = (double) rand() / (double) RAND_MAX;
+	return pow((expected - output), 2);
+}*/
+
+
+double urgence(double expected, double output)
+{
+	return -1 * sigmoid_prime(output) * (output - expected);
 }
 
-double* cost(double* output, double* expected, size_t len)
+double diff_bias(double learning_rate, double urgence)
 {
-	double* error_vect = malloc(sizeof(double) * len);
+	return learning_rate * urgence;
+}
+
+
+double diff_weight(double learning_rate, double urgence, double input)
+{
+	return learning_rate * urgence * input;
+}
+
+void backprop_node(double* node, size_t len, double* input, double expected, double output)
+{
+	node[0] += diff_bias(0.3, urgence(expected, output));
 	for (size_t i = 0; i < len; ++i)
-		error_vect[i] = pow((expected[i] - output[i]), 2);
-	return error_vect; 
+		node[i] += diff_weight(0.3, urgence(exoected, output), input[i-1]);
+}
+
+
+void backprop_layer(double** layer,size_t len_node, size_t len, double* input, double* expected, double* output)
+{
+	for (size_t i = 0; i < len; i++)
+		backprop_node(layer[i], len_node, input, expected[i], output[i]);
+}
+
+
+void modif_weights(double* neuron, double input*, double* expected, double* output)
+{
+	double urgence = 
+	neuron[0] += urgence;
 }
 
 
