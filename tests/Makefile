@@ -28,7 +28,7 @@ testnn: $(SRC_NN)
 	$(CC) -o $@ $(SRC_NN) $(CFLAGS) $(LDFLAGS) $(SDLLIB) $(GTKLIB) $(MATHLIB)
 
 testnormalization: $(SRC_NORMALIZATION)
-	$(CC) -o $@ $(SRC_NORMALIZATION) $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $(SRC_NORMALIZATION) $(CFLAGS) $(SDLLIB) $(LDFLAGS)
 
 .PHONY: clean
 clean:
