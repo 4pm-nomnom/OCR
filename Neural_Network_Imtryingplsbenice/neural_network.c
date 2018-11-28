@@ -11,6 +11,10 @@
 #define NB_LAYER 3
 
 
+// FEEDFORWARD
+// Quite graspable
+
+
 double sum_weights(double* input, double* weight)
 // c'est la fonction de base pour caculer ce que ton neuronne doit calculer en gros,
 // weight[0] c'est le bias, et le reste du tableau weight c'est les weights de chacun 
@@ -63,6 +67,12 @@ void feedforward(double* input, double*** network, size_t nbLayers)
 {
 	return pow((expected - output), 2);
 }*/
+
+//THE BACKPROPAGATION
+//The backpropagation correct the target/"expected" value
+//only modifies the last weight of a node, which is its value
+//Give to each node an aim to consider with a given result.
+
 
 //returns the value stored as last weight of a given node
 double grab_value(double* node)
@@ -126,6 +136,9 @@ double diff_weight(double learning_rate, double urgence, double input)
 	return learning_rate * urgence * input;
 }
 
+
+// THE APPLIANCE
+// Updates the weights and bias of the neuralnet with the new target/ value
 
 
 void correct_node(double* node, double* input, double output)
