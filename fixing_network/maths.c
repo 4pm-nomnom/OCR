@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-#include "setting_variables.h"
 
 
 double sigmoid(double val)
@@ -23,11 +22,11 @@ double error_outputs(double target, double output)
 	return 0.5 * pow((target - output), 2);
 }
 
-double total_error(double* outputs, double* inputs, size_t nbOutpus)
+double total_error(double* outputs, double* inputs, size_t nbOutputs)
 {
 	double total_error = 0.0;
-	for (size_t i = 0; i < nbOutputs, ++i)
-		total_error += error(inputs[i], outputs[i]);
+	for (size_t i = 0; i < nbOutputs; ++i)
+		total_error += error_outputs(inputs[i], outputs[i]);
 	return total_error;
 }
 
@@ -46,14 +45,14 @@ double delta(double target, double output, double input)
 	return derrivative_Error_output(target, output) * derrivative_outpout(output) * input;
 }
 
-double error_hidden_prev(double target, double output)
+double error_hidden_prev(double target, double output, double weight)
 {
 	return derrivative_Error_output(target, output) * derrivative_outpout(output) * weight;
 }
 
 double error_hidden(double target, double output, double output_n, double weight, double input)
 {
-	return error_hidden_prev(target, output) * derrivative_Error_output(output_n) * input;
+	return error_hidden_prev(target, output, weight) * derrivative_outpout(output_n) * input;
 }
 
 
