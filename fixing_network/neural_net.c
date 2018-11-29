@@ -72,7 +72,7 @@ void correct(double*** network, double*** error)
 void backprop(double*** network, double* outputs, double* target, double** inputs)
 {
 	double*** errors = malloc(sizeof(double**) * nblayer);
-	size_t i = nblayer - 1;
+	int i = 1;
 	backprop_layer_out(inputs[i], outputs, errors[i], target, nbneurones[i]);
 	for (; i >= 0; --i)
 	{
@@ -91,8 +91,54 @@ void epoch(double*** network, double* input, double* expected)
 	backprop(network, output, expected, inputs);
 }
 
+void Train(double*** network)
+{
+		for (size_t j = 0; j < 20000; ++j)
+		{
+				size_t i = rand() % 4;
+				double* input = malloc(sizeof(double) * 2);
+				input = _input[i];
+				printf("\nInput 1 = %f, Input 2 = %f\n", input[0], input[1]);
+				double* expected = malloc(sizeof(double));
+				expected[0] = (double) (i%2) ;
+				printf("Expected = %f\n", expected[0]);
+				epoch(network, input, expected);
+				input = _input[0];
+		}
+		size_t i = rand() % 4;
+		double* input = malloc(sizeof(double) * 2);
+		input = _input[i];
+		printf("\nInput 1 = %f, Input 2 = %f\n", input[0], input[1]);
+		double* expected = malloc(sizeof(double));
+		expected[0] = (double) (i % 2);
+		epoch(network, input, expected);
+}
+
 
 int main()
 {
-	
+		//      double *input = malloc(sizeof(double) * 2);
+		//      input[0] = (double) 1;
+		//      input[1] = (double) 1;
+		srand(time(NULL));
+		double ***network;
+		network = malloc(2*sizeof(double**));
+		network[0] = malloc(2*sizeof(double*));
+		network[1] =  malloc(sizeof(double*));
+		network[0][0] = malloc(sizeof(double) * 3);
+		network[0][1] = malloc(sizeof(double) * 3);
+		network[1][0] = malloc(sizeof(double) * 3);
+		fill_array_random(network[0], 2, 3);
+		fill_array_random(network[1], 1, 3);
+		Train(network);
+		//      double* expected = malloc(sizeof(double));
+		//      expected[0] = 0;
+		//for (size_t i = 0; i < 5000; ++i)
+		//      epoch(network, input, expected);
+		//input[0] = 0;
+		//input[1] = 1;
+		//expected[0] = 1;
+		//epoch(network, input, expected);
+		return 0;
+
 }
