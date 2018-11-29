@@ -107,6 +107,7 @@ void epoch(double*** network, double* input, double* expected)
 	double* output;
 	output = malloc(sizeof(double));
 	feedforward(network, inputs, output);
+	printf("Input[x] = %f\n", input[1][0]);
 	backprop(network, output, expected, inputs);
 	printf("Output[0] = %f\n", output[0]);
 }
