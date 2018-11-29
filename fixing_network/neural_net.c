@@ -28,32 +28,32 @@ void feedforward(double*** network, double** inputs, double* output)
 
 void backprop_node_out(double target, double output, double* inputs, double* error_out, size_t nbWeight)
 {
-	for (size_t i = 0; i < nbWeight; ++i)
-		error_out[i] = delta(target, output, inputs[i]);
+	//for (size_t i = 0; i < nbWeight; ++i)
+		//error_out[i] = delta(target, output, inputs[i]);
 }
 
 
 void backprop_layer_out(double* inputs, double* outputs, double** errors_out, double* targets, size_t nbNeurones)
 {
-	for (size_t i = 0; i < nbNeurones; ++i)
-		backprop_node_out(targets[i], outputs[i], inputs, errors_out[i], nbweights[i]);
+	//for (size_t i = 0; i < nbNeurones; ++i)
+		//backprop_node_out(targets[i], outputs[i], inputs, errors_out[i], nbweights[i]);
 }
 
 
 void backprop_node(double* node, double* target, double* out, double output, double* inputs, double* errors, size_t nbWeights)
 {
-	for (size_t i = 1; i < nbWeights; ++i)
-		for (size_t j = 0; j < nbinputs; ++j)
-			errors[i] += error_hidden(target[j], out[j], output, node[i], inputs[i - 1]);
+	//for (size_t i = 1; i < nbWeights; ++i)
+		//for (size_t j = 0; j < nbinputs; ++j)
+			//errors[i] += error_hidden(target[j], out[j], output, node[i], inputs[i - 1]);
 }
 
 
 void backprop_layerH(double** layer, double* targets, double* output, double* out, double* in, double** errors, size_t nbNodes)
 {
-	for (size_t i = 0; i < nbNodes; ++i)
+	//for (size_t i = 0; i < nbNodes; ++i)
 	{
-		errors[i] = malloc(sizeof(double) * nbweights[i]);
-		backprop_node(layer[i], targets, output, out[i], in, errors[i], nbweights[i]);
+		//errors[i] = malloc(sizeof(double) * nbweights[i]);
+		//backprop_node(layer[i], targets, output, out[i], in, errors[i], nbweights[i]);
 	}
 }
 
@@ -64,19 +64,29 @@ void correct(double*** network, double*** error)
 		{
 			network[i][j][0] -= eta * error[i][j][0];
 			for (size_t k = 1; k < nbweights[j]; ++k)
-				network[i][j][k] -= eta * error[i][j][k];
+				{
+					network[i][j][k] -= eta * error[i][j][k];
+					printf("new weight = %f\n", network[i][j][k]);
+				}
+		printf("\n");
 		}
 }
 
 
 void backprop(double*** network, double* outputs, double* target, double** inputs)
 {
-	double*** errors = malloc(sizeof(double**) * nblayer);
+	double*** errors;
+	errors = malloc(sizeof(double**) * nblayer);
+	errors[0] = malloc(sizeof(double*) * 2);
+	errors[1] = malloc(sizeof(double*));
+	errors[0][0] = malloc(sizeof(double) * 3);
+	errors[0][1] = malloc(sizeof(double) * 3);
+	errors[1][0] = malloc(sizeof(double) * 3);
 	int i = 1;
-	backprop_layer_out(inputs[i], outputs, errors[i], target, nbneurones[i]);
+//	printf("coucou");
+	backprop_layer_out(inputs[1], outputs, errors[i], target, nbneurones[i]);
 	for (; i >= 0; --i)
 	{
-		errors[i] = malloc(sizeof(double*) * nbneurones[i]);
 		backprop_layerH(network[i], target, outputs, inputs[i+1], inputs[i-1], errors[i], nbneurones[i]);
 	}
 	correct(network, errors);
@@ -84,16 +94,22 @@ void backprop(double*** network, double* outputs, double* target, double** input
 
 void epoch(double*** network, double* input, double* expected)
 {
-	double** inputs = malloc(nblayer * sizeof(double*));
-	inputs[0] = input; 
-	double* output = malloc(sizeof(double) * nbneurones[nblayer-1]);
+	//printf("coucou");
+	double **inputs;
+	inputs = malloc(2 * sizeof(double*));
+	inputs[0] = malloc(sizeof(double) * 2);
+	inputs[0] = input;
+	//printf("Input allocated");
+	double* output;
+	output = malloc(sizeof(double) * nbneurones[nblayer-1]);
 	feedforward(network, inputs, output);
 	backprop(network, output, expected, inputs);
+	printf("Output[0] = %f\n", output[0]);
 }
 
 void Train(double*** network)
 {
-		for (size_t j = 0; j < 20000; ++j)
+		for (size_t j = 0; j < 10; ++j)
 		{
 				size_t i = rand() % 4;
 				double* input = malloc(sizeof(double) * 2);
@@ -103,7 +119,7 @@ void Train(double*** network)
 				expected[0] = (double) (i%2) ;
 				printf("Expected = %f\n", expected[0]);
 				epoch(network, input, expected);
-				input = _input[0];
+//				input = _input[0];
 		}
 		size_t i = rand() % 4;
 		double* input = malloc(sizeof(double) * 2);
@@ -142,3 +158,5 @@ int main()
 		return 0;
 
 }
+
+
