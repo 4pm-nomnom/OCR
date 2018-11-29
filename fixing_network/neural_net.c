@@ -10,7 +10,10 @@ void feedforward_layer(double* input, double** layer, size_t nbNeurones, double*
 {
 	inputs = malloc(sizeof(double) * nbweights[0]);
 	for (size_t i = 0; i < nbNeurones; ++i)
-		inputs[i] = sigmoid(sum_weights(input, layer[i], nbweights[i]));
+	{
+	inputs[i] = sigmoid(sum_weights(input, layer[i], nbweights[i]));
+	printf("%f\n",inputs[i]);
+	}
 }
 
 
@@ -28,32 +31,31 @@ void feedforward(double*** network, double** inputs, double* output)
 
 void backprop_node_out(double target, double output, double* inputs, double* error_out, size_t nbWeight)
 {
-	//for (size_t i = 0; i < nbWeight; ++i)
-		//error_out[i] = delta(target, output, inputs[i]);
+	for (size_t i = 0; i < nbWeight; ++i)
+		error_out[i] = delta(target, output, inputs[i]);
 }
 
 
 void backprop_layer_out(double* inputs, double* outputs, double** errors_out, double* targets, size_t nbNeurones)
 {
-	//for (size_t i = 0; i < nbNeurones; ++i)
-		//backprop_node_out(targets[i], outputs[i], inputs, errors_out[i], nbweights[i]);
+	for (size_t i = 0; i < nbNeurones; ++i)
+		backprop_node_out(targets[i], outputs[i], inputs, errors_out[i], nbweights[i]);
 }
 
 
 void backprop_node(double* node, double* target, double* out, double output, double* inputs, double* errors, size_t nbWeights)
 {
-	//for (size_t i = 1; i < nbWeights; ++i)
-		//for (size_t j = 0; j < nbinputs; ++j)
-			//errors[i] += error_hidden(target[j], out[j], output, node[i], inputs[i - 1]);
+	for (size_t i = 1; i < nbWeights; ++i)
+		for (size_t j = 0; j < nbinputs; ++j)
+			errors[i] += error_hidden(target[j], out[j], output, node[i], inputs[i - 1]);
 }
 
 
 void backprop_layerH(double** layer, double* targets, double* output, double* out, double* in, double** errors, size_t nbNodes)
 {
-	//for (size_t i = 0; i < nbNodes; ++i)
+	for (size_t i = 0; i < nbNodes; ++i)
 	{
-		//errors[i] = malloc(sizeof(double) * nbweights[i]);
-		//backprop_node(layer[i], targets, output, out[i], in, errors[i], nbweights[i]);
+		backprop_node(layer[i], targets, output, out[i], in, errors[i], nbweights[i]);
 	}
 }
 
@@ -84,10 +86,11 @@ void backprop(double*** network, double* outputs, double* target, double** input
 	errors[1][0] = malloc(sizeof(double) * 3);
 	int i = 1;
 //	printf("coucou");
+	--i;
 	backprop_layer_out(inputs[1], outputs, errors[i], target, nbneurones[i]);
 	for (; i >= 0; --i)
 	{
-		backprop_layerH(network[i], target, outputs, inputs[i+1], inputs[i-1], errors[i], nbneurones[i]);
+		backprop_layerH(network[i], target, outputs, inputs[i+1], inputs[i], errors[i], nbneurones[i]);
 	}
 	correct(network, errors);
 }
@@ -99,9 +102,10 @@ void epoch(double*** network, double* input, double* expected)
 	inputs = malloc(2 * sizeof(double*));
 	inputs[0] = malloc(sizeof(double) * 2);
 	inputs[0] = input;
+	inputs[1] = malloc(sizeof(double) * 2);
 	//printf("Input allocated");
 	double* output;
-	output = malloc(sizeof(double) * nbneurones[nblayer-1]);
+	output = malloc(sizeof(double));
 	feedforward(network, inputs, output);
 	backprop(network, output, expected, inputs);
 	printf("Output[0] = %f\n", output[0]);
@@ -109,7 +113,7 @@ void epoch(double*** network, double* input, double* expected)
 
 void Train(double*** network)
 {
-		for (size_t j = 0; j < 10; ++j)
+		for (size_t j = 0; j < 5; ++j)
 		{
 				size_t i = rand() % 4;
 				double* input = malloc(sizeof(double) * 2);
