@@ -133,6 +133,22 @@ void binarize_text_as_black(SDL_Surface *image_surface)
     }
 }
 
+void bin_matrix_from_surface(size_t *bin_matrix, SDL_Surface *image_surface)
+{
+    size_t img_width = image_surface->w;
+    size_t img_height = image_surface->h;
+    for(size_t y=0; y<img_height; y++)
+    {
+        for(size_t x=0; x<img_width; x++)
+        {
+            Uint32 pixel = get_pixel(image_surface, x, y);
+            Uint8 r, g, b;
+            SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
+            bin_matrix[y*img_width+x] = (r==0)?1:0;
+        }
+    }
+}
+
 /*
 int main()
 {

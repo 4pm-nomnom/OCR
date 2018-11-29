@@ -1,26 +1,8 @@
 #include <stdio.h>
 #include "image.h"
+#include "segmentation.h"
 
-#define MAX_NUMBER_OF_LINES 100
-#define MAX_NUMBER_OF_CHARACTERS 200
-
-typedef struct
-{
-    size_t LeftBound;
-    size_t RightBound;
-    size_t *matrix; // = malloc(sizeof(size_t)*img_height*img_width);
-}Character;
-
-typedef struct
-{
-    size_t UpperBound;
-    size_t LowerBound;
-    size_t nbCharacters;
-    Character *Characters;
-}TextLine;
-
-
-size_t TextLines_ycut_find(TextLine textLines[],
+size_t TextLines_find(TextLine textLines[],
                             size_t binarized_image[],
                             size_t height, size_t width)
 {
@@ -75,13 +57,13 @@ void TextLines_show(TextLine textLines[], size_t nbTextLines)
     }
 }
 
-size_t Characters_find_quick_bounds(TextLine textLine,
+void Characters_find_bounds(TextLine *textLine,
         size_t binarized_image[],
         size_t img_width,
         size_t img_height)
 {
-    size_t upperBound = textLine.UpperBound;
-    size_t lowerBound = textLine.LowerBound;
+    size_t upperBound = textLine->UpperBound;
+    size_t lowerBound = textLine->LowerBound;
     size_t nbCharactersFound = 0;
     int wasChar=0;
     size_t startingPoint=0;
@@ -104,12 +86,32 @@ size_t Characters_find_quick_bounds(TextLine textLine,
             Character character;
             character.LeftBound = startingPoint;
             character.RightBound = x;
-            textLine.Characters[nbCharactersFound] = character;
+            textLine->Characters[nbCharactersFound] = character;
             wasChar = 0;
             nbCharactersFound++;
         }
     }
-    return nbCharactersFound;
+    textLine->nbCharacters = nbCharactersFound;
+}
+
+void get_characters(TextLine *textLine,
+        size_t binarized_image[],
+        size_t img_width, size_t img_height)
+{
+    Characters_find_bounds(textLine, binarized_image, img_width, img_height);
+    
+    for(size_t j=0; j < textLine->nbCharacters; j++)
+    {
+        Character *currentChar = &(textLine->Characters[j]);
+        size_t new_height = textLine->LowerBound - textLine->UpperBound;
+        size_t new_width = currentChar->RightBound - currentChar->LeftBound;
+        printf("%zu/%zu\n", new_height, new_width);
+        size_t *cropped = matrix_crop(binarized_image, img_height, img_width,
+                textLine->UpperBound, currentChar->LeftBound,
+                new_height, new_width);
+        currentChar->matrix = normalize(cropped, new_height, new_width);
+        matrix_print(currentChar->matrix, WANTED_SIZE, WANTED_SIZE);
+    }
 }
 
 void Surface_draw_vline(SDL_Surface *image_surface, size_t numCol,
@@ -154,80 +156,109 @@ void Surface_draw_textLines(SDL_Surface *image_surface,
         }
     }
 }
-/*
-int main()
+
+size_t *matrix_crop(size_t matrix[], size_t matrix_height, size_t matrix_width,
+    size_t upperBound, size_t leftBound, size_t cropped_height, size_t cropped_width)
 {
-    printf("Hello World! The OCR segmentation is starting\n");
-
-    //                      Image Loading
-    //--- SDL initialisation ------------------------------------
-    SDL_Surface* image_surface;
-    SDL_Surface* screen_surface;
-    init_sdl();
-
-    //--- Load image --------------------------------------------
-    char img_path[] = "samples/lines.png";
-    image_surface = load_image(img_path);
-
-    size_t img_width = image_surface->w ;
-    size_t img_height = image_surface->h ;
-    printf("[%s] was loaded\n", img_path);
-    printf("width = %zu // height = %zu\n", img_width, img_height);
-
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-
-     *                      Segmentation                         *
-    //--- Binarisation ------------------------------------------
-    size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
-    for(size_t y=0; y<img_height; y++)
+    size_t *cropped = calloc(cropped_height*cropped_width, sizeof(size_t));
+    if (cropped_height+upperBound > matrix_height ||
+        cropped_width+cropped_width > matrix_width)
+        return NULL;
+    for(size_t r=0; r < cropped_height; r++)
     {
-        for(size_t x=0; x<img_width; x++)
+        for(size_t c=0; c < cropped_width; c++)
         {
-            Uint32 pixel = get_pixel(image_surface, x, y);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
-            Uint8 average = 0.3*r + 0.59*g + 0.11*b;
-            img_bin_matrix[y*img_width+x] = (average <= 255/2)?1:0;
+            cropped[r*cropped_width + c] = matrix[(upperBound+r)*matrix_width+(leftBound+c)];
         }
     }
+    return cropped;
+}
 
-    //--- Get Lines ---------------------------------------------
-    TextLine *textLines = calloc(MAX_NUMBER_OF_LINES, sizeof(TextLine));
-    size_t nbTextLines = TextLines_ycut_find(textLines,
-                                                    img_bin_matrix,
-                                                    img_height,
-                                                    img_width);
-    TextLines_show(textLines, nbTextLines);
 
-    //--- Get Characters ----------------------------------------
-    for(size_t i=0; i < nbTextLines; i++)
+//----------------------------------------------------------------------------
+//--NORMALIZATION
+//this function put the matrix at the center of a square (larger)
+void matrix_put_in_square(size_t matrix[], size_t square[],
+    size_t height, size_t width, size_t square_size)
+{
+    size_t startRow = square_size/2 - height/2;
+    size_t startCol = square_size/2 - width/2;
+
+    for(size_t r=0; r < height; r++)
     {
-        Character *characters;
-        characters = calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
-        textLines[i].Characters = characters;
+        for(size_t c=0; c < width; c++)
+        {
+            square[square_size*(startRow+r)+(startCol+c)] = matrix[width*(r)+c];
+        }
+    }
+}
 
-        textLines[i].nbCharacters = Characters_find_quick_bounds(textLines[i],
-                                                                img_bin_matrix,
-                                                                img_width,
-                                                                img_height);
-        printf("nbCharacters detected : %zu\n", textLines[i].nbCharacters);
+//resize a square into a smaller one of size n*n (n being a divisoof )
+void square_resize(size_t square[], size_t resized[],
+    size_t square_size, size_t resized_size)
+{
+    size_t ratio = square_size/resized_size;
+    for(size_t r=0; r<resized_size; r++)
+    {
+        for(size_t c=0; c<resized_size; c++)
+        {
+            size_t nbOne = 0;
+            for (size_t i=r*ratio; i<(r+1)*ratio; i++)
+            {
+                for (size_t j=c*ratio; j<(c+1)*ratio; j++)
+                {
+                    if (square[square_size*i+j])
+                        nbOne++;
+                }
+            }
+            size_t value = (nbOne/ratio*ratio >= 0.4)? 1 : 0 ;
+            resized[resized_size*r + c] = value;
+        }
+    }
+}
+
+//transform a matrix into a squared one of 16x16
+size_t* normalize(size_t matrix[], size_t height, size_t width)
+{
+    size_t *result = calloc(WANTED_SIZE*WANTED_SIZE, sizeof(size_t));
+    size_t square_size;
+    square_size = (height>width)?
+        height + (WANTED_SIZE - height%WANTED_SIZE):
+        width + (WANTED_SIZE - width%WANTED_SIZE);
+
+    size_t *square = calloc(square_size*square_size, sizeof(size_t));
+
+    matrix_put_in_square(matrix, square, height, width, square_size);
+    //matrix_print(square, square_size, square_size);
+
+    square_resize(square, result, square_size, WANTED_SIZE);
+
+    free(square);
+    return result;
+}
+
+void matrix_print(size_t matrix[], size_t height, size_t width)
+{
+    printf("*");
+    for(size_t i=0; i<width;i++)
+        printf("-");
+    printf("*\n");
+
+    for(size_t r=0; r<height; r++)
+    {
+        printf("|");
+        for(size_t c=0; c<width; c++)
+        {
+            if (matrix[width*r+c])
+                printf("1");
+            else
+                printf(" ");
+        }
+        printf("|\n");
     }
 
-    Surface_draw_textLines(image_surface, textLines, nbTextLines);
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-
-    //--- Free memory -------------------------------------------
-    free(img_bin_matrix);
-    for(size_t i=0; i<nbTextLines; i++)
-    {
-        free(textLines[i].Characters);
-    }
-    free(textLines);
-    SDL_FreeSurface(image_surface);
-    SDL_FreeSurface(screen_surface);
-
-    return 0;
-}*/
+    printf("*");
+    for(size_t i=0; i<width;i++)
+        printf("-");
+    printf("*\n");
+}

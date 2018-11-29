@@ -120,7 +120,7 @@ int convert()
     printf("--- Image Loading ---\n");
     //--- SDL initialisation ------------------------------------
     SDL_Surface* image_surface;
-    SDL_Surface* screen_surface;
+    //SDL_Surface* screen_surface;
     init_sdl();
 
     //--- Load image --------------------------------------------
@@ -131,8 +131,11 @@ int convert()
     printf("[%s] has been loaded ",imgPath);
     printf("(width = %zu | height = %zu)\n", img_width, img_height);
 
+    /*
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
+    */
+
 
     /************************************************************
      *                   Image Pre-processing                    *
@@ -143,27 +146,40 @@ int convert()
     printf("--- Turning the image from color to grayscale ---\n");
     grayscale(image_surface);
 
+    /*
     update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
+    */
 
     //--- Binarization ------------------------------------------
     printf("--- Binarization using otsu method ---\n");
     size_t otsuThreshold = otsu_threshold(image_surface);
     printf("otsu Threshold: %zu\n",otsuThreshold);
     binarize(image_surface, otsuThreshold);
-
+    
+    /*
     update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
+    */
 
     //--- Reverse Binarization if text is white -----------------
     printf("--- Reverse Binarization if text is white ---\n");
     binarize_text_as_black(image_surface);
 
+    /*
     update_surface(screen_surface, image_surface);
     screen_surface = display_image(image_surface);
     wait_for_keypressed();
+    */
+
+    //--- bin-matrix creation -----------------------------------
+    printf("--- text as a matrix ---\n");
+    size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
+    bin_matrix_from_surface(img_bin_matrix, image_surface);
+
+    matrix_print(img_bin_matrix, img_height, img_width);
 
     //--- rotate the image if needed (De-skew) ------------------
     // automatic_rotation(img_matrix);
@@ -179,50 +195,32 @@ int convert()
      * In this section the layout will be analysed. This means   *
      * the segmentation of blocks/lines/words/characters.        *
      *************************************************************/
-    //--- bin-matrix creation -----------------------------------
-    printf("--- text as a matrix ---\n");
-    size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
-    for(size_t y=0; y<img_height; y++)
-    {
-        for(size_t x=0; x<img_width; x++)
-        {
-            Uint32 pixel = get_pixel(image_surface, x, y);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
-            img_bin_matrix[y*img_width+x] = (r==0)?1:0;
-        }
-    }
 
     //--- Get Lines ---------------------------------------------
-    printf("--- detecting lines ---\n");
     TextLine *textLines = calloc(MAX_NUMBER_OF_LINES, sizeof(TextLine));
-    size_t nbTextLines = TextLines_ycut_find(textLines,
-            img_bin_matrix,
-            img_height,
-            img_width);
+    size_t nbTextLines = TextLines_find(textLines,
+            img_bin_matrix, img_height, img_width);
     TextLines_show(textLines, nbTextLines);
 
     //--- Get Characters ----------------------------------------
-    printf("--- detecting characters ---\n");
     for(size_t i=0; i < nbTextLines; i++)
     {
+        TextLine *currentLine = &textLines[i];
+
         Character *characters;
         characters = calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
-        textLines[i].Characters = characters;
+        
+        currentLine->Characters = characters;
+        get_characters(currentLine, img_bin_matrix, img_width, img_height);
 
-        textLines[i].nbCharacters = Characters_find_quick_bounds(textLines[i],
-                img_bin_matrix,
-                img_width,
-                img_height);
         printf("Line[%zu] -> nbCharacters detected : %zu\n",
-                i, textLines[i].nbCharacters);
+                i, currentLine->nbCharacters);
+
     }
 
     Surface_draw_textLines(image_surface, textLines, nbTextLines);
 
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    //wait_for_keypressed();
+    //matrix_print(img_bin_matrix, height, width);
 
     //--- Normalise characters (aspect ratio / scale) -----------
 
@@ -265,7 +263,7 @@ int convert()
     SDL_FreeSurface(image_surface);
 
     // Free the screen surface.
-    SDL_FreeSurface(screen_surface);
+    //SDL_FreeSurface(screen_surface);
 
     return EXIT_SUCCESS;
 }
@@ -414,6 +412,7 @@ void on_btn_file_selection_open_clicked()
     {
         //TODO if the file is not an image
     }
+    gtk_widget_queue_resize(window_main);
     gtk_widget_destroy(window_file_selection);
 }
 
@@ -582,8 +581,6 @@ void on_cb_advanced_toggled()
 
 void on_btn_convert_clicked()
 {
-    //window_loading_create();
-    //sleep(2);
     if (isactive_advanced)
     {
         window_advanced_create();
@@ -591,9 +588,8 @@ void on_btn_convert_clicked()
     else
     {
         printf("start image convertion with normal settings\n");
-        //convert();
+        convert();
     }
-    //gtk_widget_destroy(window_loading);
 }
 
 void on_btn_text_save_clicked()
