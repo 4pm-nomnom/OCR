@@ -15,7 +15,7 @@ double sigmoid_prime(double val)
 
 double grad(double targeted, double output)
 {
-	return 2* (output - target);
+	return 2* (output - targeted);
 }
 
 
@@ -38,7 +38,7 @@ double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbW
 {
 	double sum = 0;
 	for (size_t k = 1; k < nbWeights; ++k)
-		sum += errlayersucc[i - 1] * layer[i][cst];
+		sum += errlayersucc[k - 1] * layer[k][cst];
 	return sum;
 }
 
@@ -51,7 +51,7 @@ double target(double input, double sum_weighted_messages)
 
 
 //errlayer is the layer[i] of the error network
-// of nbNeurones synapses
+// of nbNeurones synapses;
 //errlayersucc is the layer[i + 1] of the error network
 // of nbweights synapses
 //as layer
@@ -62,7 +62,7 @@ void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,siz
 	for (size_t i = 0; i < nbNeurones; ++i)
 	{
 		sum = sum_messages(errlayersucc, layer, i, nbWeights);
-		errlayer[i] = target(node[i], sum);
+		errlayer[i] = target(errlayer[i], sum);
 	}
 }
 
@@ -70,7 +70,7 @@ void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,siz
 //expected is the value desired
 double error_margin(double returned, double expected)
 {
-	return pow * ((expected - returned), 2);
+	return pow((expected - returned), 2);
 }
 
 //inputs are the same as error margin

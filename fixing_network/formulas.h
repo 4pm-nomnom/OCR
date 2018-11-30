@@ -7,7 +7,7 @@ double sigmoid_prime(double val);
 
 double grad(double targeted, double output);
 
-double sum_weights(double* weights, double input, size_t nbWeights);
+double sum_weights(double* weights, double* input, size_t nbWeights);
 
 double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbWeights);
 
@@ -18,3 +18,5 @@ void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer, si
 double error_margin(double returned, double expected);
 
 double error_margin_grad(double returned, double expected);
+
+#endif
