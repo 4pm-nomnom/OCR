@@ -4,6 +4,7 @@
 #include <time.h>
 #include "setting_variables.h"
 #include "maths.h"
+//#include "formulas.h"
 
 
 void feedforward_layer(double* input, double** layer, size_t nbNeurones, double* inputs)

@@ -56,7 +56,7 @@ double target(double input, double sum_weighted_messages)
 // of nbweights synapses
 //as layer
 //modifies the whole layer
-void cell_modif(double* errlayer, double* errlayersucc, double** layer,size_t nbNeurones, size_t nbWeights)
+void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,size_t nbNeurones, size_t nbWeights)
 {
 	double sum;
 	for (size_t i = 0; i < nbNeurones; ++i)
@@ -66,7 +66,16 @@ void cell_modif(double* errlayer, double* errlayersucc, double** layer,size_t nb
 	}
 }
 
+//returned is the value whose accurateness is tested
+//expected is the value desired
+double error_margin(double returned, double expected)
+{
+	return pow * ((expected - returned), 2);
+}
 
-//modifies each layer
-void backpropagation
-
+//inputs are the same as error margin
+double error_margin_grad(double returned, double expected)
+{
+	// partial derivative of the cost using on the associated weight coordinates.
+	return 2 * (expected - returned);
+}
