@@ -9,6 +9,11 @@ double sigmoid(double val)
 	return 1.0/(1.0 + exp(-val));
 }
 
+double sigmoid_prime(double val)
+{
+	return sigmoid(val) * (1 - sigmoid(val));
+}
+
 double sum_weights(double* weights, double* input, size_t nbWeights)
 {
 	double sum = weights[0];
@@ -20,7 +25,8 @@ double sum_weights(double* weights, double* input, size_t nbWeights)
 double error_outputs(double target, double output)
 {
 	double res = 0.5 * pow((target - output), 2);
-	printf("Error_output = %f\n", res); 
+	printf("Error_output = %f\n", res);
+	return res; 
 }
 
 double total_error(double* outputs, double* inputs, size_t nbOutputs)
@@ -43,7 +49,7 @@ double derrivative_outpout(double output)
 
 double delta(double target, double output, double input)
 {
-	return derrivative_Error_output(target, output) * derrivative_outpout(output) * input;
+	return derrivative_outpout(output) * input;
 }
 
 double error_hidden_prev(double target, double output, double weight)
