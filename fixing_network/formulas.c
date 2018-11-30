@@ -41,7 +41,8 @@ double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbW
 	for (size_t k = 0; k < nbWeights - 1; ++k)
 		{
 				sum += errlayersucc[cst] * layer[k][cst + 1];
-		}
+				printf("errlayersucc[%zu] is %f \n layer[%zu][%zu] is %f\n", cst, errlayersucc[cst], k, cst +1, layer[k][cst + 1]);
+				}
 	return sum;
 }
 
@@ -63,9 +64,10 @@ void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,siz
 {
 	double sum;
 	for (size_t i = 0; i < nbNeurones; ++i)
-	{	//printf("layer_cell reached \n");
+	{
 		sum = sum_messages(errlayersucc, layer, i, nbWeights);
 		errlayer[i] = target(errlayer[i], sum);
+		printf("errlayer[%zu] is %f \n \n", i , errlayer[i]);
 	}
 }
 
