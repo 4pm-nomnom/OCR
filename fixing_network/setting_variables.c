@@ -11,9 +11,15 @@ void fill_array_random(double** layer, size_t _i, size_t _j)
 {
 	for (size_t i = 0; i < _i; ++i)
 		for (size_t j = 0; j < _j; ++j)
-			layer[i][j] = (double) rand() / (double) RAND_MAX;
+			layer[i][j] = (double) rand() / RAND_MAX - rand() / RAND_MAX ;
 }
 
+void fill_errors_random(double* errorlayer, size_t _i)
+{
+		for (size_t i = 0; i < _i; ++i)
+				errorlayer[i] = (double) rand() / (double) RAND_MAX;
+						
+}
 // Remplir la matrice de valeurs sauvegardees
 
 

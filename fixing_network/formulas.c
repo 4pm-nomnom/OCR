@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <stdio.h>
 
 double sigmoid(double val)
 {
@@ -37,8 +38,10 @@ double sum_weights(double *weights, double* input, size_t nbWeights)
 double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbWeights)
 {
 	double sum = 0;
-	for (size_t k = 1; k < nbWeights; ++k)
-		sum += errlayersucc[k - 1] * layer[k][cst];
+	for (size_t k = 0; k < nbWeights - 1; ++k)
+		{
+				sum += errlayersucc[cst] * layer[k][cst + 1];
+		}
 	return sum;
 }
 
@@ -60,7 +63,7 @@ void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,siz
 {
 	double sum;
 	for (size_t i = 0; i < nbNeurones; ++i)
-	{
+	{	//printf("layer_cell reached \n");
 		sum = sum_messages(errlayersucc, layer, i, nbWeights);
 		errlayer[i] = target(errlayer[i], sum);
 	}
@@ -79,3 +82,12 @@ double error_margin_grad(double returned, double expected)
 	// partial derivative of the cost using on the associated weight coordinates.
 	return 2 * (expected - returned);
 }
+
+
+
+
+
+
+
+
+
