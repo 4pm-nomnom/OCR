@@ -19,7 +19,8 @@ double sum_weights(double* weights, double* input, size_t nbWeights)
 
 double error_outputs(double target, double output)
 {
-	return 0.5 * pow((target - output), 2);
+	double res = 0.5 * pow((target - output), 2);
+	printf("Error_output = %f\n", res); 
 }
 
 double total_error(double* outputs, double* inputs, size_t nbOutputs)
