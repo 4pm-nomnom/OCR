@@ -50,10 +50,10 @@ double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbW
 
 // input is the node of layer[i] whose target is replaced
 // sum_weighted_messages is the val of biased targets from the layer[i + 1]
-//double target(double input, double sum_weighted_messages)
-//{
-//	return sigmoid_prime(input) * sum_weighted_messages;
-//}
+double target(double input, double sum_weighted_messages)
+{
+	return sigmoid_prime(input) * sum_weighted_messages;
+}
 
 
 //errlayer is the layer[i] of the error network
@@ -68,10 +68,10 @@ void layer_cell_modif(double* errlayer,double* errlayersucc,double** layer,size_
 	for (size_t i = 0; i < nbNeurones; ++i)
 	{
 		sum = sum_messages(errlayersucc, layer, i, nbweights);
-       // printf("sum is %f\n", sum);
-	//	printf("pretarget errlayer[%ld] is %f \n", i, errlayer[i]);
-		errlayer[i] = sum;
-//		printf("errlayer[%ld] is %f \n", i, errlayer[i]);
+        printf("sum is %f\n", sum);
+		printf("pretarget errlayer[%ld] is %f \n", i, errlayer[i]);
+		errlayer[i] = target(errlayer[i], sum);
+		printf("errlayer[%ld] is %f \n", i, errlayer[i]);
 	}
 }
 

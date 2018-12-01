@@ -39,18 +39,19 @@ void feedforward(double*** network, double** inputs, double* output, double** er
 void correct(double*** network, double** error, double** inputs)
 {
 		size_t i;
-		printf("Errors[0][0] is %f\ninputs[0][0] is %f\n", error[0][0], inputs[0][0]);
+		//printf("Errors[0][0] is %f\ninputs[0][0] is %f\n", error[0][0], inputs[0][0]);
 	for (i = 0; i < nblayer; ++i)
 		for (size_t j = 0; j < nbneurones[i]; ++j)
 		{
-			printf("Bias of the [%ld] in the layer[%ld] is %f \n", j, i, network[i][j][0]);
+			//printf("Bias of the [%ld] in the layer[%ld] is %f \n", j, i, network[i][j][0]);
 			network[i][j][0] -= eta * error[i][j];
-			printf("Bias of the [%ld] in the layer[%ld] is %f \n", j, i, network[i][j][0]);
+			//printf("Bias of the [%ld] in the layer[%ld] is %f \n", j, i, network[i][j][0]);
 			for (size_t k = 1; k < nbweights[j]; ++k)
 				{
-				printf("Weight[%ld]  of the [%ld] in the layer[%ld] is %f \n", k, j, i, network[i][j][k]);
+				//printf("Weight[%ld]  of the [%ld] in the layer[%ld] is %f \n", k, j, i, network[i][j][k]);
+				printf("inputs[%ld][%ld] is %f\n", i, j, inputs[i][j]);
 					network[i][j][k] -= eta * error[i][j] * inputs[i][j];
-				printf("Weight[%ld]  of the [%ld] in the layer[%ld] is %f \n", k, j, i, network[i][j][k]);
+				//printf("Weight[%ld]  of the [%ld] in the layer[%ld] is %f \n", k, j, i, network[i][j][k]);
 				}
 		}
 }
