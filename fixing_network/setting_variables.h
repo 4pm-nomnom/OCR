@@ -12,6 +12,7 @@ double _input[4][2] = {{1.0,1.0}, {1.0,0.0}, {0.0, 0.0}, {0.0, 1.0}};
 
 void fill_array_random(double** layer, size_t _i, size_t _j);
 
-double* copy_array(double* arr, size_t len, double* copy);
+void copy_array(double* arr, size_t len, double* copy);
 
+double*** malloc_net();
 #endif

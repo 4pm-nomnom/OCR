@@ -29,7 +29,7 @@ double sum_weights(double* weights, double* input, size_t nbWeights)
 	double sum = weights[0];
 	for (size_t i =1; i < nbWeights; ++i)
 	{// explicit
-		sum +=weights[i] * input[i - 1];
+		sum +=weights[i] * sigmoid(input[i - 1]);
 		//printf("weights[%zu] is  %f \n, input[%zu] is %f \n", i, weights[i], i - 1, input[i - 1]);
 	}
 	return sum;
@@ -68,10 +68,10 @@ void layer_cell_modif(double* errlayer,double* errlayersucc,double** layer,size_
 	for (size_t i = 0; i < nbNeurones; ++i)
 	{
 		sum = sum_messages(errlayersucc, layer, i, nbweights);
-        printf("sum is %f\n", sum);
-		printf("pretarget errlayer[%ld] is %f \n", i, errlayer[i]);
+  //      printf("sum is %f\n", sum);
+//		printf("pretarget errlayer[%ld] is %f \n", i, errlayer[i]);
 		errlayer[i] = target(errlayer[i], sum);
-		printf("errlayer[%ld] is %f \n", i, errlayer[i]);
+//		printf("errlayer[%ld] is %f \n", i, errlayer[i]);
 	}
 }
 
