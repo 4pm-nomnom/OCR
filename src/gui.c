@@ -22,6 +22,8 @@ GtkFileChooser *g_file_selection;
 GtkFileChooser *g_file_save;
 GtkTextView *g_text_result;
 GspellNavigator *g_spell_navigator;
+GtkImage *image_show_steps;
+GtkWidget *show_steps_image_box;
 
 GtkToggleButton *cb_advanced;
 GtkToggleButton *cb_show_pre_processing;
@@ -29,12 +31,17 @@ GtkToggleButton *cb_show_segmentation;
 GtkToggleButton *rb_spell_check_en;
 GtkToggleButton *rb_spell_check_fr;
 GtkToggleButton *rb_spell_check_disable;
+GtkToggleButton *rb_show_original;
+GtkToggleButton *rb_show_grayscale;
+GtkToggleButton *rb_show_binarized;
+GtkToggleButton *rb_show_segmentation;
 
 GtkWidget *window_main;
 GtkWidget *window_about;
 GtkWidget *window_file_selection;
 GtkWidget *window_file_save;
 GtkWidget *window_advanced;
+GtkWidget *window_show;
 GtkWidget *window_nn;
 
 GtkBuilder *builder;
@@ -108,6 +115,8 @@ int convert()
     size_t img_width = image_surface->w;
     size_t img_height = image_surface->h;
 
+    Surface_save_image(image_surface, "tmp/original.bmp");
+    
     size_t *img_bin_matrix = matrix_from_image_preprocessing(image_surface);
 
     matrix_print(img_bin_matrix, img_height, img_width);
@@ -409,11 +418,96 @@ void on_window_file_save_file_activated(GtkFileChooser *chooser,
 }
 
 //-----------------------------------------------------------------------------
+//--SHOW-WINDOW
+void change_image_preview(gchar *imagePath);
+void window_show_create()
+{
+    if (window_show)
+        gtk_widget_destroy(window_show);
+
+    gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
+    gtk_builder_connect_signals(builder, NULL);
+    window_show = GTK_WIDGET(
+            gtk_builder_get_object(builder, "window_show"));
+
+    image_show_steps = GTK_IMAGE(
+            gtk_builder_get_object(builder, "image_show_steps"));
+    show_steps_image_box = GTK_WIDGET(
+            gtk_builder_get_object(builder, "show_steps_image_box"));
+
+    rb_show_original = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_btn_show_original"));
+    rb_show_grayscale = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_btn_show_grayscale"));
+    rb_show_binarized = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_btn_show_binarized"));
+    rb_show_segmentation = GTK_TOGGLE_BUTTON(
+            gtk_builder_get_object(builder, "rb_btn_show_segmentation"));
+
+    gtk_toggle_button_set_active (rb_show_original, TRUE);
+    gtk_toggle_button_set_active (rb_show_grayscale, FALSE);
+    gtk_toggle_button_set_active (rb_show_binarized, FALSE);
+    gtk_toggle_button_set_active (rb_show_segmentation, FALSE);
+
+    gtk_widget_show(window_show);
+    change_image_preview("tmp/original.bmp");
+}
+
+void on_btn_show_steps_quit_clicked()
+{
+    gtk_widget_destroy(window_show);
+}
+
+void change_image_preview(gchar *imagePath)
+{
+    GdkPixbuf *pixbuf_show = gdk_pixbuf_new_from_file(imagePath, NULL);
+    GtkAllocation allocation;
+    gtk_widget_get_allocation(
+        show_steps_image_box,
+        &allocation);
+    int desired_width = allocation.width;
+    int desired_height = allocation.height;
+    float r_box = (float)desired_height/desired_width;
+    float r_image = (float)gdk_pixbuf_get_height(pixbuf)/
+        gdk_pixbuf_get_width(pixbuf_show);
+
+    if (r_box > r_image)
+    {
+        desired_width -= 4;
+        desired_height = (int)(desired_width * r_image);
+    }
+    else
+    {
+        desired_height -= 4;
+        desired_width = (int)(desired_height / r_image);
+    }
+    gtk_image_set_from_pixbuf(image_show_steps,
+        gdk_pixbuf_scale_simple(pixbuf_show,
+            desired_width, desired_height, GDK_INTERP_BILINEAR));
+    gtk_widget_queue_resize(window_show);
+}
+
+void on_rb_btn_show_toggled()
+{
+    if (gtk_toggle_button_get_active(rb_show_original))
+        change_image_preview("tmp/original.bmp");
+    if (gtk_toggle_button_get_active(rb_show_grayscale))
+        change_image_preview("tmp/grayscale.bmp");
+    if (gtk_toggle_button_get_active(rb_show_binarized))
+        change_image_preview("tmp/binarized.bmp");
+    if (gtk_toggle_button_get_active(rb_show_segmentation))
+        change_image_preview("tmp/segmentation.bmp");
+}
+
+//-----------------------------------------------------------------------------
 //--ADVANCED-CONVERT-WINDOW
 void window_advanced_create()
 {
     if (window_advanced)
         gtk_widget_destroy(window_advanced);
+
+    isactive_show_preprocessing = FALSE;
+    isactive_show_segmentation = FALSE;
 
     gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
     gtk_builder_connect_signals(builder, NULL);
@@ -448,15 +542,19 @@ void on_btn_advanced_convert_clicked()
     printf("start image convertion with advanced settings\n");
     gtk_widget_destroy(window_advanced);
     convert();
+    if (isactive_show_preprocessing || isactive_show_segmentation)
+        window_show_create();
 }
 
 void on_cb_show_pre_processing_toggled()
 {
-    isactive_show_preprocessing = gtk_toggle_button_get_active(cb_show_pre_processing);
+    isactive_show_preprocessing =
+        gtk_toggle_button_get_active(cb_show_pre_processing);
 }
 void on_cb_show_segmentation_toggled()
 {
-    isactive_show_segmentation = gtk_toggle_button_get_active(cb_show_segmentation);
+    isactive_show_segmentation =
+        gtk_toggle_button_get_active(cb_show_segmentation);
 }
 void on_rb_spell_check_toggled()
 {
