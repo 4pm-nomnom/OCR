@@ -157,7 +157,7 @@ size_t *matrix_from_image_preprocessing(SDL_Surface *image_surface)
     //--- grayscale ---------------------------------------------
     grayscale(image_surface);
     
-    Surface_save_image(image_surface, "tmp/grayscale");
+    Surface_save_image(image_surface, "tmp/grayscale.bmp");
 
     //--- Binarization ------------------------------------------
     binarize(image_surface, otsu_threshold(image_surface));
@@ -165,7 +165,7 @@ size_t *matrix_from_image_preprocessing(SDL_Surface *image_surface)
     //--- Reverse Binarization if text is white -----------------
     binarize_text_as_black(image_surface);
 
-    Surface_save_image(image_surface, "tmp/binarized");
+    Surface_save_image(image_surface, "tmp/binarized.bmp");
 
     //--- rotate the image if needed (De-skew) ------------------
     // automatic_rotation(img_matrix);

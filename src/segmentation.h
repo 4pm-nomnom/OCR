@@ -18,7 +18,7 @@ typedef struct
     size_t UpperBound;
     size_t LowerBound;
     size_t nbCharacters;
-    size_t avCharacterWidth;
+    size_t averageSpaceWidth;
     Character *Characters;
 }TextLine;
 
@@ -65,7 +65,7 @@ void matrix_print(size_t matrix[], size_t height, size_t width);
 
 /*
 void Surface_draw_rlsa(SDL_Surface *image_surface, ...)
-void 
+void
 
 */
 
