@@ -23,7 +23,7 @@ double grad(double targeted, double output)
 // weights are from layer[i]
 // input are from layer[i - 1]
 // computes the val given to the sigmoid for a node of the layer[i]
-double sum_weights(double *weights, double* input, size_t nbWeights)
+double sum_weights(double* weights, double* input, size_t nbWeights)
 {
 	// sum of node = its bias;
 	double sum = weights[0];
@@ -43,6 +43,7 @@ double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbW
 				sum += errlayersucc[cst] * layer[k][cst + 1];
 				printf("errlayersucc[%zu] is %f \n layer[%zu][%zu] is %f\n", cst, errlayersucc[cst], k, cst +1, layer[k][cst + 1]);
 				}
+    printf("atm sum is %f\n", sum);
 	return sum;
 }
 
@@ -60,12 +61,13 @@ double target(double input, double sum_weighted_messages)
 // of nbweights synapses
 //as layer
 //modifies the whole layer
-void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,size_t nbNeurones, size_t nbWeights)
+void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,size_t nbNeurones, size_t nbweights)
 {
 	double sum;
 	for (size_t i = 0; i < nbNeurones; ++i)
 	{
-		sum = sum_messages(errlayersucc, layer, i, nbWeights);
+		sum = sum_messages(errlayersucc, layer, i, nbweights);
+        printf("sum is %f\n", sum);
 		errlayer[i] = target(errlayer[i], sum);
 		printf("errlayer[%zu] is %f \n \n", i , errlayer[i]);
 	}

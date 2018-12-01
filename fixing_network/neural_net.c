@@ -3,7 +3,6 @@
 #include <math.h>
 #include <time.h>
 #include "setting_variables.h"
-#include "maths.h"
 #include "formulas.h"
 
 
@@ -56,10 +55,11 @@ void correct(double*** network, double** error, double** inputs)
 void backprop(double*** network, double** inputs, double** errors)
 {
 	int i = 1;
-//	printf("coucou");
 	for (; i >= 0; --i)
 	{
-		layer_cell_modif(errors[i - 1], errors[i], network[i - 1], nbneurones[i - 1], nbweights[i]);
+		layer_cell_modif(errors[i - 1], errors[i], network[i - 1], nbneurones[i - 1 ], nbweights[i - 1]);
+        printf("errors[%u][0] is %f \nerrors[%u][0] is %f \n", i - 1, errors[i-1][0], i, errors[i][0]);
+        printf("nbneurones[%u] is %ld \nISWEIGHTMODIFIEDHERE[%u] is %ld", i - 1 , nbneurones[i - 1], i, nbweights[i]);
 	}
 //	for (size_t i = 0; i < nblayer; ++i)
 		//for (size_t j = 0; i < nbneurones[i]; ++i)
@@ -100,14 +100,14 @@ void Train(double*** network)
 {
 		for (size_t j = 0; j < 5000; ++j)
 		{
-				size_t i = rand() % 4;
-				double* input = malloc(sizeof(double) * 2);
-				input = _input[i];
-				printf("\nInput 1 = %f \nInput 2 = %f\n", input[0], input[1]);
+			size_t i = rand() % 4;
+			double* input = malloc(sizeof(double) * 2);
+			input = _input[i];
+			printf("\nInput 1 = %f \nInput 2 = %f\n", input[0], input[1]);
 			double* expected = malloc(sizeof(double));
 			expected[0] = (double) (i % 2);
-				epoch(network, input,expected);
-//				input = _input[0];
+			epoch(network, input,expected);
+//			input = _input[0];
 		}
 		size_t i = rand() % 4;
 		double* input = malloc(sizeof(double) * 2);
@@ -146,5 +146,3 @@ int main()
 		return 0;
 
 }
-
-
