@@ -11,4 +11,6 @@ void binarize_text_as_black(SDL_Surface *image_surface);
 
 void bin_matrix_from_surface(size_t *bin_matrix, SDL_Surface *image_surface);
 
+size_t *matrix_from_image_preprocessing(SDL_Surface *image_surface);
+
 #endif

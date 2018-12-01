@@ -18,7 +18,7 @@ typedef struct
     size_t UpperBound;
     size_t LowerBound;
     size_t nbCharacters;
-    size_t characterWidth;
+    size_t avCharacterWidth;
     Character *Characters;
 }TextLine;
 

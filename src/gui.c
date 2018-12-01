@@ -15,6 +15,7 @@
 #define MAX_NUMBER_OF_CHARACTERS 200
 
 GtkImage *g_image_main;
+gchar *currentImage;
 GtkWidget *image_box;
 GdkPixbuf *pixbuf;
 GtkWidget *g_lbl_image_name;
@@ -91,7 +92,6 @@ void launch_ocr(int argc, char *argv[])
 
     gtk_widget_show(window_main);
     gtk_main();
-
 }
 
 
@@ -99,96 +99,21 @@ void launch_ocr(int argc, char *argv[])
 //--MAIN-FUNCTION-CONVERT
 int convert()
 {
-    //--- get argv (img_path) -----------------------------------
-    /*
-    if (argc < 2)
-    {
-        printf("You must provide an image file\n");
-        return EXIT_FAILURE;
-    }
-    char *imgPath = calloc((strlen(argv[1])+1), sizeof(char));
-    strcpy(imgPath, argv[1]);
-    */
-    char *imgPath = "samples/hey.png";
-
-    printf("==== Hello World! The OCR is starting ====\n");
-
-    /************************************************************
-     *                      Image Loading                        *
-     * This step convert an image (png/jpg/bmp...) to a matrix.  *
-     *************************************************************/
-    printf("--- Image Loading ---\n");
-    //--- SDL initialisation ------------------------------------
+    //if not created 
+    char *imgPath = currentImage;
+    
+    //--- Load image --------------------------------------------
     SDL_Surface* image_surface;
-    //SDL_Surface* screen_surface;
     init_sdl();
 
-    //--- Load image --------------------------------------------
     image_surface = load_image(imgPath);
     size_t img_width = image_surface->w;
     size_t img_height = image_surface->h;
 
-    printf("[%s] has been loaded ",imgPath);
-    printf("(width = %zu | height = %zu)\n", img_width, img_height);
-
-    /*
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-    */
-
-
-    /************************************************************
-     *                   Image Pre-processing                    *
-     * Process the image to make the character detection &       *
-     * recognition easier.                                       *
-     *************************************************************/
-    //--- grayscale ---------------------------------------------
-    printf("--- Turning the image from color to grayscale ---\n");
-    grayscale(image_surface);
-
-    /*
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-    */
-
-    //--- Binarization ------------------------------------------
-    printf("--- Binarization using otsu method ---\n");
-    size_t otsuThreshold = otsu_threshold(image_surface);
-    printf("otsu Threshold: %zu\n",otsuThreshold);
-    binarize(image_surface, otsuThreshold);
-    
-    /*
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-    */
-
-    //--- Reverse Binarization if text is white -----------------
-    printf("--- Reverse Binarization if text is white ---\n");
-    binarize_text_as_black(image_surface);
-
-    /*
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-    */
-
-    //--- bin-matrix creation -----------------------------------
-    printf("--- text as a matrix ---\n");
-    size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
-    bin_matrix_from_surface(img_bin_matrix, image_surface);
+    size_t *img_bin_matrix = matrix_from_image_preprocessing(image_surface);
 
     matrix_print(img_bin_matrix, img_height, img_width);
 
-    //--- rotate the image if needed (De-skew) ------------------
-    // automatic_rotation(img_matrix);
-
-    //--- remove positive and negative spots (Despeckle) --------
-    // noise_reduction(img_matrix);
-
-    //--- line removal - cleans up non-glyph lines/boxes --------
-    // lines_removal(img_matrix);
 
     /************************************************************
      *                   Character Detection                     *
@@ -207,16 +132,19 @@ int convert()
     {
         TextLine *currentLine = &textLines[i];
 
-        Character *characters;
-        characters = calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
-        
-        currentLine->Characters = characters;
+        currentLine->Characters = 
+            calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
         get_characters(currentLine, img_bin_matrix, img_width, img_height);
 
         printf("Line[%zu] -> nbCharacters detected : %zu\n",
                 i, currentLine->nbCharacters);
 
+        //find avergage character width
+        currentLine->avCharacterWidth = 1;
+        //TODO
     }
+
+
 
     Surface_draw_textLines(image_surface, textLines, nbTextLines);
 
@@ -250,8 +178,10 @@ int convert()
     /************************************************************
      *                        Free Memory                        *
      *************************************************************/
-    //characters
+
     free(img_bin_matrix);
+
+    //characters
     for(size_t i=0; i<nbTextLines; i++)
     {
         free(textLines[i].Characters);
@@ -261,9 +191,6 @@ int convert()
 
     // Free the image surface.
     SDL_FreeSurface(image_surface);
-
-    // Free the screen surface.
-    //SDL_FreeSurface(screen_surface);
 
     return EXIT_SUCCESS;
 }
@@ -407,6 +334,8 @@ void on_btn_file_selection_open_clicked()
             image_name = g_strconcat(dots, image_name, NULL);
         }
         gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
+
+        currentImage = g_strconcat (g_strreverse(file_path), NULL);
     }
     else
     {
@@ -532,6 +461,7 @@ void on_btn_advanced_convert_clicked()
 {
     printf("start image convertion with advanced settings\n");
     gtk_widget_destroy(window_advanced);
+    convert();
 }
 
 void on_cb_show_pre_processing_toggled()
@@ -581,15 +511,20 @@ void on_cb_advanced_toggled()
 
 void on_btn_convert_clicked()
 {
-    if (isactive_advanced)
+    if (currentImage)
     {
-        window_advanced_create();
+        if (isactive_advanced)
+        {
+            window_advanced_create();
+        }
+        else
+        {
+            printf("start image convertion with normal settings\n");
+            convert();
+        }
     }
     else
-    {
-        printf("start image convertion with normal settings\n");
-        convert();
-    }
+        gchar_to_text_view(g_text_result, "You need to select an Image to convert it !\n");
 }
 
 void on_btn_text_save_clicked()

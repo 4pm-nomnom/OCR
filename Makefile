@@ -16,14 +16,18 @@ LM = -lm
 
 SRC = $(shell find src -type f -name "*.c")
 
-all: $(TARGET) 
+all: $(TARGET) tmpdir 
 
 ocr: $(SRC)
 	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDL) $(GTK) $(GSPELL) $(LM)
+
+tmpdir:
+	mkdir -p tmp
 
 .PHONY: clean
 clean:
 	# remove program file
 	${RM} $(TARGET)
-
+	# remove temp folder
+	rm -r tmp
 # END

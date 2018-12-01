@@ -15,7 +15,7 @@ Uint32 get_pixel(SDL_Surface *surface, unsigned x, unsigned y);
 void put_pixel(SDL_Surface *surface, unsigned x, unsigned y, Uint32 pixel);
 void update_surface(SDL_Surface* screen, SDL_Surface* image);
 
-void Save_image(SDL_Surface* image, char* name);
+void Surface_save_image(SDL_Surface* image, char* name);
 
 SDL_Surface *ScaleSurface(SDL_Surface *surface, size_t width, size_t height);
 

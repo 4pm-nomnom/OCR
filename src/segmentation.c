@@ -99,7 +99,7 @@ void get_characters(TextLine *textLine,
         size_t img_width, size_t img_height)
 {
     Characters_find_bounds(textLine, binarized_image, img_width, img_height);
-    
+
     for(size_t j=0; j < textLine->nbCharacters; j++)
     {
         Character *currentChar = &(textLine->Characters[j]);
