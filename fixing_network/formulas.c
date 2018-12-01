@@ -28,8 +28,10 @@ double sum_weights(double* weights, double* input, size_t nbWeights)
 	// sum of node = its bias;
 	double sum = weights[0];
 	for (size_t i =1; i < nbWeights; ++i)
-		// explicit
+	{// explicit
 		sum +=weights[i] * input[i - 1];
+		//printf("weights[%zu] is  %f \n, input[%zu] is %f \n", i, weights[i], i - 1, input[i - 1]);
+	}
 	return sum;
 }
 
@@ -40,19 +42,18 @@ double sum_messages(double* errlayersucc, double** layer, size_t cst, size_t nbW
 	double sum = 0;
 	for (size_t k = 0; k < nbWeights - 1; ++k)
 		{
-				sum += errlayersucc[cst] * layer[k][cst + 1];
-				printf("errlayersucc[%zu] is %f \n layer[%zu][%zu] is %f\n", cst, errlayersucc[cst], k, cst +1, layer[k][cst + 1]);
-				}
-    printf("atm sum is %f\n", sum);
+				sum += errlayersucc[k] * layer[k][cst + 1];
+//				printf("errlayersucc[%zu] is %f \n layer[%zu][%zu] is %f\n", k, errlayersucc[cst], k, cst +1, layer[k][cst + 1]);
+		}
 	return sum;
 }
 
 // input is the node of layer[i] whose target is replaced
 // sum_weighted_messages is the val of biased targets from the layer[i + 1]
-double target(double input, double sum_weighted_messages)
-{
-	return sigmoid_prime(input) * sum_weighted_messages;
-}
+//double target(double input, double sum_weighted_messages)
+//{
+//	return sigmoid_prime(input) * sum_weighted_messages;
+//}
 
 
 //errlayer is the layer[i] of the error network
@@ -61,15 +62,16 @@ double target(double input, double sum_weighted_messages)
 // of nbweights synapses
 //as layer
 //modifies the whole layer
-void layer_cell_modif(double* errlayer, double* errlayersucc, double** layer,size_t nbNeurones, size_t nbweights)
+void layer_cell_modif(double* errlayer,double* errlayersucc,double** layer,size_t nbNeurones,size_t nbweights)
 {
 	double sum;
 	for (size_t i = 0; i < nbNeurones; ++i)
 	{
 		sum = sum_messages(errlayersucc, layer, i, nbweights);
-        printf("sum is %f\n", sum);
-		errlayer[i] = target(errlayer[i], sum);
-		printf("errlayer[%zu] is %f \n \n", i , errlayer[i]);
+       // printf("sum is %f\n", sum);
+	//	printf("pretarget errlayer[%ld] is %f \n", i, errlayer[i]);
+		errlayer[i] = sum;
+//		printf("errlayer[%ld] is %f \n", i, errlayer[i]);
 	}
 }
 
