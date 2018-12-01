@@ -62,6 +62,7 @@ void Characters_find_bounds(TextLine *textLine,
         size_t img_width,
         size_t img_height)
 {
+    size_t totalSpace = 0;
     size_t upperBound = textLine->UpperBound;
     size_t lowerBound = textLine->LowerBound;
     size_t nbCharactersFound = 0;
@@ -79,6 +80,9 @@ void Characters_find_bounds(TextLine *textLine,
         {
             startingPoint = x;
             wasChar = 1;
+
+            if (nbCharactersFound)
+                totalSpace += startingPoint-textLine->Characters[nbCharactersFound - 1].RightBound;
             continue;
         }
         if (wasChar && !nbPixelOnThisLine)
@@ -92,6 +96,9 @@ void Characters_find_bounds(TextLine *textLine,
         }
     }
     textLine->nbCharacters = nbCharactersFound;
+    
+    if (nbCharactersFound > 1)
+        textLine->averageSpaceWidth = totalSpace/(nbCharactersFound-1);
 }
 
 void get_characters(TextLine *textLine,
@@ -105,10 +112,11 @@ void get_characters(TextLine *textLine,
         Character *currentChar = &(textLine->Characters[j]);
         size_t new_height = textLine->LowerBound - textLine->UpperBound;
         size_t new_width = currentChar->RightBound - currentChar->LeftBound;
-        printf("%zu/%zu\n", new_height, new_width);
+
         size_t *cropped = matrix_crop(binarized_image, img_height, img_width,
                 textLine->UpperBound, currentChar->LeftBound,
                 new_height, new_width);
+
         currentChar->matrix = normalize(cropped, new_height, new_width);
         matrix_print(currentChar->matrix, WANTED_SIZE, WANTED_SIZE);
     }

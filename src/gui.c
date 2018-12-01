@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> // used for sleep (to show loading page <3)
 // #include "SDL/SDL.h" //included in image.h
 // #include "SDL/SDL_image.h" //included in image.h
 #include <gtk/gtk.h> // graphical user interfaces
@@ -36,7 +35,6 @@ GtkWidget *window_about;
 GtkWidget *window_file_selection;
 GtkWidget *window_file_save;
 GtkWidget *window_advanced;
-GtkWidget *window_loading;
 GtkWidget *window_nn;
 
 GtkBuilder *builder;
@@ -99,9 +97,9 @@ void launch_ocr(int argc, char *argv[])
 //--MAIN-FUNCTION-CONVERT
 int convert()
 {
-    //if not created 
+    //if not created
     char *imgPath = currentImage;
-    
+
     //--- Load image --------------------------------------------
     SDL_Surface* image_surface;
     init_sdl();
@@ -113,7 +111,6 @@ int convert()
     size_t *img_bin_matrix = matrix_from_image_preprocessing(image_surface);
 
     matrix_print(img_bin_matrix, img_height, img_width);
-
 
     /************************************************************
      *                   Character Detection                     *
@@ -132,43 +129,50 @@ int convert()
     {
         TextLine *currentLine = &textLines[i];
 
-        currentLine->Characters = 
+        currentLine->Characters =
             calloc(MAX_NUMBER_OF_CHARACTERS, sizeof(Character));
         get_characters(currentLine, img_bin_matrix, img_width, img_height);
 
         printf("Line[%zu] -> nbCharacters detected : %zu\n",
                 i, currentLine->nbCharacters);
-
-        //find avergage character width
-        currentLine->avCharacterWidth = 1;
-        //TODO
     }
 
-
-
+    // save images of the segmentation
     Surface_draw_textLines(image_surface, textLines, nbTextLines);
-
-    //matrix_print(img_bin_matrix, height, width);
-
-    //--- Normalise characters (aspect ratio / scale) -----------
-
+    Surface_save_image(image_surface, "tmp/segmentation.bmp");
 
     /************************************************************
      *                  Character Recognition                    *
      * Convert the input matrix (representing a character) to an *
      * ASCII                                                     *
      *************************************************************/
-    //--- possibility to initialize a neural network ------------
-    // neural_network_init(...)
-    // when init the network, use random value instead of nothing
-    // neural_network_from_source(source ...)
+    gchar *recognized_text = "";
+    for(size_t i=0; i<nbTextLines; i++)
+    {
+        for(size_t c=0; c<textLines[i].nbCharacters; c++)
+        {
+            //size_t *char_matrix = textLines[i].Characters[c].matrix;
+            // char result_char = nn_character_recognition(char_matrix);
+            gchar *result_char = "a";
+            recognized_text = g_strconcat(recognized_text, result_char, NULL);
 
-    //--- possibility to train the neural network ---------------
-    // training(input, wanting_output)
+            //is there a space after this char ?
+            if (c+1<textLines[i].nbCharacters &&
+                textLines[i].Characters[c+1].LeftBound -
+                textLines[i].Characters[c].RightBound >
+                textLines[i].averageSpaceWidth*1.2)
+                recognized_text = g_strconcat(recognized_text, " ", NULL);
 
-    //--- get the estimated output for a specific input ---------
-    // get_result(input_character)
-
+            free(textLines[i].Characters[c].matrix);
+        }
+        recognized_text = g_strconcat(recognized_text, "\n", NULL);
+        free(textLines[i].Characters);
+    }
+    //textlines
+    free(textLines);
+    gchar_to_text_view(g_text_result, recognized_text);
+    g_free(recognized_text);
+    
     /************************************************************
      *                     Post-processing                       *
      * Possible checking of the words by using a dictionnary or  *
@@ -178,16 +182,7 @@ int convert()
     /************************************************************
      *                        Free Memory                        *
      *************************************************************/
-
     free(img_bin_matrix);
-
-    //characters
-    for(size_t i=0; i<nbTextLines; i++)
-    {
-        free(textLines[i].Characters);
-    }
-    //textlines
-    free(textLines);
 
     // Free the image surface.
     SDL_FreeSurface(image_surface);
@@ -195,6 +190,8 @@ int convert()
     return EXIT_SUCCESS;
 }
 
+//-----------------------------------------------------------------------------
+//--MAIN-FUNCTIONS
 // called when main_window is closed
 void on_window_main_destroy()
 {
@@ -270,16 +267,6 @@ void on_window_main_size_allocate()
 }
 
 //-----------------------------------------------------------------------------
-//--LOADING-WINDOW
-void window_loading_create()
-{
-    gtk_builder_add_from_file (builder, "gui/window_main.glade", NULL);
-    window_loading = GTK_WIDGET(
-            gtk_builder_get_object(builder, "window_loading"));
-    gtk_widget_show(window_loading);
-}
-
-//-----------------------------------------------------------------------------
 //--FILE-SELECTION-WINDOW
 void window_file_selection_create()
 {
@@ -292,8 +279,6 @@ void window_file_selection_create()
     window_file_selection = GTK_WIDGET(
             gtk_builder_get_object(builder, "window_file_selection"));
     gtk_widget_show(window_file_selection);
-
-    //g_object_unref(builder);
 }
 
 void on_btn_file_selection_cancel_clicked()
@@ -343,6 +328,7 @@ void on_btn_file_selection_open_clicked()
     }
     gtk_widget_queue_resize(window_main);
     gtk_widget_destroy(window_file_selection);
+    g_free(file_path);
 }
 
 void on_window_file_selection_file_activated(GtkFileChooser *chooser,
@@ -402,14 +388,14 @@ void on_btn_file_save_cancel_clicked()
 
 void on_btn_file_save_save_clicked()
 {
-    //gchar *save_path = gtk_editable_get_chars (g_entry_file_save_name, 0, -1);
-    char *filename;
+    gchar *filename;
     filename = gtk_file_chooser_get_filename(g_file_save);
     FILE *fs;
     fs = fopen(filename, "w");
-    gchar *result_text = gchar_from_text_view(g_text_result);
-    fprintf(fs, "%s", result_text);
+    gchar *result_txt = gchar_from_text_view(g_text_result);
+    fprintf(fs, "%s", result_txt);
     g_free(filename);
+    g_free(result_txt);
     fclose(fs);
     gtk_widget_destroy(window_file_save);
 }
@@ -524,7 +510,8 @@ void on_btn_convert_clicked()
         }
     }
     else
-        gchar_to_text_view(g_text_result, "You need to select an Image to convert it !\n");
+        gchar_to_text_view(g_text_result,
+            "You need to select an Image to convert it !\n");
 }
 
 void on_btn_text_save_clicked()
@@ -534,7 +521,7 @@ void on_btn_text_save_clicked()
 
 void on_btn_text_copy_clicked()
 {
-    const char *message = gchar_from_text_view(g_text_result);
+    const gchar *message = gchar_from_text_view(g_text_result);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
             message, strlen(message));
     gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -561,7 +548,6 @@ void on_menu_file_quit_activate()
 {
     gtk_main_quit();
 }
-
 
 void on_menu_view_best_fit_activate()
 {
@@ -626,7 +612,8 @@ void on_menu_view_zoom_out_activate()
 void on_menu_tools_deskew_activate()
 {
     //TODO
-    gchar_to_text_view(g_text_result, "De-skew tool! (not implemented yet ...)\n");
+    gchar_to_text_view(g_text_result,
+        "De-skew tool! (not implemented yet ...)\n");
 }
 
 void on_menu_tools_spellchecker_activate()
@@ -640,7 +627,8 @@ void on_menu_tools_spellchecker_activate()
 void on_menu_tools_neural_network_activate()
 {
     //TODO
-    gchar_to_text_view(g_text_result, "Neural-network preferences!\n(not implemented yet ...)\n");
+    gchar_to_text_view(g_text_result,
+        "Neural-network preferences!\n(not implemented yet ...)\n");
 }
 
 void on_menu_help_help_activate()
