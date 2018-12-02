@@ -10,9 +10,6 @@
 #include "preprocessing.h"
 #include "segmentation.h"
 
-#define MAX_NUMBER_OF_LINES 100
-#define MAX_NUMBER_OF_CHARACTERS 200
-
 GtkImage *g_image_main;
 gchar *currentImage;
 GtkWidget *image_box;
@@ -119,7 +116,7 @@ int convert()
     
     size_t *img_bin_matrix = matrix_from_image_preprocessing(image_surface);
 
-    matrix_print(img_bin_matrix, img_height, img_width);
+    //matrix_print(img_bin_matrix, img_height, img_width);
 
     /************************************************************
      *                   Character Detection                     *
@@ -300,6 +297,7 @@ gboolean file_isimage(gchar *file_path)
     return (
         g_str_has_suffix(file_path, ".jpg") ||
         g_str_has_suffix(file_path, ".png") ||
+        g_str_has_suffix(file_path, ".pdf") ||
         g_str_has_suffix(file_path, ".bmp")
         );
 }
@@ -315,7 +313,27 @@ void on_btn_file_selection_open_clicked()
         zoom_bestfit = 1;
         zoom_largefit = 0;
         zoom_normal = 0;
-        pixbuf = gdk_pixbuf_new_from_file(file_path, NULL);
+        if (g_str_has_suffix(file_path, ".pdf"))
+        {
+            int success = system(g_strconcat(
+                "pdftocairo -l 5 -png ", file_path, " tmp/pdf",
+                ";convert -append tmp/pdf-*.png tmp/pdf_view.png", NULL));
+            if (success != -1)
+            {
+                pixbuf = gdk_pixbuf_new_from_file("tmp/pdf_view.png", NULL);
+                currentImage = g_strconcat ("tmp/pdf_view.png", NULL);
+            }
+            else
+            {
+                gchar_to_text_view(g_text_result,
+                    "Failed to convert your pdf, sorry for that !\n");
+            }
+        }
+        else
+        {
+            pixbuf = gdk_pixbuf_new_from_file(file_path, NULL);
+            currentImage = g_strconcat (file_path, NULL);
+        }
         on_window_main_size_allocate();
 
         gsize maxlength = 12;
@@ -329,11 +347,6 @@ void on_btn_file_selection_open_clicked()
         }
         gtk_label_set_text(GTK_LABEL(g_lbl_image_name), image_name);
 
-        currentImage = g_strconcat (g_strreverse(file_path), NULL);
-    }
-    else
-    {
-        //TODO if the file is not an image
     }
     gtk_widget_queue_resize(window_main);
     gtk_widget_destroy(window_file_selection);
