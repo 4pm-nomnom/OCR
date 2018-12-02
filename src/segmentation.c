@@ -3,8 +3,8 @@
 #include "segmentation.h"
 
 size_t TextLines_find(TextLine textLines[],
-                            size_t binarized_image[],
-                            size_t height, size_t width)
+        size_t binarized_image[],
+        size_t height, size_t width)
 {
     size_t nbTextLines=0;
     int wasLine=0;
@@ -82,7 +82,8 @@ void Characters_find_bounds(TextLine *textLine,
             wasChar = 1;
 
             if (nbCharactersFound)
-                totalSpace += startingPoint-textLine->Characters[nbCharactersFound - 1].RightBound;
+                totalSpace += startingPoint -
+                    textLine->Characters[nbCharactersFound - 1].RightBound;
             continue;
         }
         if (wasChar && !nbPixelOnThisLine)
@@ -96,7 +97,7 @@ void Characters_find_bounds(TextLine *textLine,
         }
     }
     textLine->nbCharacters = nbCharactersFound;
-    
+
     if (nbCharactersFound > 1)
         textLine->averageSpaceWidth = totalSpace/(nbCharactersFound-1);
 }
@@ -124,7 +125,7 @@ void get_characters(TextLine *textLine,
 }
 
 void Surface_draw_vline(SDL_Surface *image_surface, size_t numCol,
-                        size_t upperBound, size_t lowerBound)
+        size_t upperBound, size_t lowerBound)
 {
     for(size_t y=upperBound; y < lowerBound; y++)
     {
@@ -146,7 +147,7 @@ void Surface_draw_hline(SDL_Surface *image_surface, size_t numLine)
 }
 
 void Surface_draw_textLines(SDL_Surface *image_surface,
-                            TextLine textLines[], size_t nbTextLines)
+        TextLine textLines[], size_t nbTextLines)
 {
     for(size_t i=0; i < nbTextLines; i++)
     {
@@ -159,25 +160,27 @@ void Surface_draw_textLines(SDL_Surface *image_surface,
         {
             Character character = textLines[i].Characters[j];
             Surface_draw_vline(image_surface, character.LeftBound,
-                                upperBound, lowerBound);
+                    upperBound, lowerBound);
             Surface_draw_vline(image_surface, character.RightBound,
-                                upperBound, lowerBound);
+                    upperBound, lowerBound);
         }
     }
 }
 
 size_t *matrix_crop(size_t matrix[], size_t matrix_height, size_t matrix_width,
-    size_t upperBound, size_t leftBound, size_t cropped_height, size_t cropped_width)
+        size_t upperBound, size_t leftBound,
+        size_t cropped_height, size_t cropped_width)
 {
     size_t *cropped = calloc(cropped_height*cropped_width, sizeof(size_t));
     if (cropped_height+upperBound > matrix_height ||
-        cropped_width+cropped_width > matrix_width)
+            cropped_width+cropped_width > matrix_width)
         return NULL;
     for(size_t r=0; r < cropped_height; r++)
     {
         for(size_t c=0; c < cropped_width; c++)
         {
-            cropped[r*cropped_width + c] = matrix[(upperBound+r)*matrix_width+(leftBound+c)];
+            cropped[r*cropped_width + c] =
+                matrix[(upperBound+r)*matrix_width+(leftBound+c)];
         }
     }
     return cropped;
@@ -188,7 +191,7 @@ size_t *matrix_crop(size_t matrix[], size_t matrix_height, size_t matrix_width,
 //--NORMALIZATION
 //this function put the matrix at the center of a square (larger)
 void matrix_put_in_square(size_t matrix[], size_t square[],
-    size_t height, size_t width, size_t square_size)
+        size_t height, size_t width, size_t square_size)
 {
     size_t startRow = square_size/2 - height/2;
     size_t startCol = square_size/2 - width/2;
@@ -204,7 +207,7 @@ void matrix_put_in_square(size_t matrix[], size_t square[],
 
 //resize a square into a smaller one of size n*n (n being a divisoof )
 void square_resize(size_t square[], size_t resized[],
-    size_t square_size, size_t resized_size)
+        size_t square_size, size_t resized_size)
 {
     size_t ratio = square_size/resized_size;
     for(size_t r=0; r<resized_size; r++)

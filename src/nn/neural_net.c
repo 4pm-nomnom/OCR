@@ -6,7 +6,8 @@
 #include "maths.h"
 
 // computes each node output with respect to inputs
-void feedforward_layer(double* input, double** layer, size_t nbNeurones, double* inputs)
+void feedforward_layer(double* input, double** layer, size_t nbNeurones,
+        double* inputs)
 {
     for (size_t i = 0; i < nbNeurones; ++i)
     {
@@ -26,7 +27,8 @@ void feedforward(double*** network, double** inputs, double* output)
 }
 
 //update a node error margin with respect to the cost of the feedforward output
-double backprop_node_out(double target, double output, double* inputs, size_t nbWeight)
+double backprop_node_out(double target, double output, double* inputs,
+        size_t nbWeight)
 {
     double error_out = 0;
     for (size_t i = 0; i < nbWeight; ++i)
@@ -37,31 +39,38 @@ double backprop_node_out(double target, double output, double* inputs, size_t nb
 }
 
 // calls node error for the whole last layer
-void backprop_layer_out(double* inputs, double* outputs, double* errors_out, double* targets, size_t nbNeurones)
+void backprop_layer_out(double* inputs, double* outputs, double* errors_out,
+        double* targets, size_t nbNeurones)
 {
     for (size_t i = 0; i < nbNeurones; ++i)
-        errors_out[i] = backprop_node_out(targets[i], outputs[i], inputs, nbweights[i]);
+        errors_out[i] = backprop_node_out(targets[i], outputs[i], inputs,
+                nbweights[i]);
 }
 
 //update a node error margin
-double backprop_node(double* node, double* target, double* out, double output, double* inputs, size_t nbWeights)
+double backprop_node(double* node, double* target, double* out, double output,
+        double* inputs, size_t nbWeights)
 {
     double error = 0;
     for (size_t i = 0; i < nbWeights; ++i)
         for (size_t j = 0; j < nbneurones[i - 1] ;++j)
         {
-            error += error_hidden(target[0], output, out[i], node[j], inputs[j]);
+            error += error_hidden(target[0], output, out[i], node[j],
+                    inputs[j]);
         }
     return error;
 }
 
 // Instantiate the errors of the whole layer
-// in is the inputs of the layer in the network associated to the layer of the error matrix
-void backprop_layerH(double** layer, double* targets, double* output, double* out, double* in, double* errors, size_t nbNodes)
+// in is the inputs of the layer in the network associated to the layer of
+// the error matrix
+void backprop_layerH(double** layer, double* targets, double* output,
+        double* out, double* in, double* errors, size_t nbNodes)
 {
     for (size_t i = 0; i < nbNodes - 1; ++i)
     {
-        errors[i] = backprop_node(layer[i+1], targets, output, out[i], in, nbweights[i]);
+        errors[i] = backprop_node(layer[i+1], targets, output, out[i], in,
+                nbweights[i]);
     }
 }
 
@@ -79,11 +88,13 @@ void correct(double*** network, double** error)
         }
 }
 
-//outputs is the vector given by the feedforward
+// outputs is the vector given by the feedforward
 // target is the value expected to reach
-//inputs is  the vector having the inputs
-// computes the error margin for each node, then update the weights according to its error margin
-void backprop(double*** network, double* outputs, double* target, double** inputs)
+// inputs is  the vector having the inputs
+// computes the error margin for each node, then update the weights according
+// to its error margin
+void backprop(double*** network, double* outputs, double* target,
+        double** inputs)
 {
     double** errors;
     errors = malloc(sizeof(double*) * nblayer);
@@ -94,15 +105,16 @@ void backprop(double*** network, double* outputs, double* target, double** input
     --i;
     for (; i >= 0; --i)
     {
-        backprop_layerH(network[i], target, outputs, inputs[i+1], inputs[i], errors[i], nbneurones[i]);
+        backprop_layerH(network[i], target, outputs, inputs[i+1], inputs[i],
+                errors[i], nbneurones[i]);
     }
     correct(network, errors);
 }
 
 
-//Calls the feedforward then the backpropagation
+// Calls the feedforward then the backpropagation
 // for given inputs
-//knowing the expected result
+// knowing the expected result
 void epoch(double*** network, double* input, double* expected)
 {
     double **inputs;
@@ -117,9 +129,9 @@ void epoch(double*** network, double* input, double* expected)
 }
 
 
-//Calls the feedforward then the backpropagation
+// Calls the feedforward then the backpropagation
 // for given inputs
-//knowing the expected result
+// knowing the expected result
 // Printing the output
 void displaying_epoch(double*** network, double* input, double* expected)
 {

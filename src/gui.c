@@ -11,6 +11,10 @@
 #include "segmentation.h"
 #include "nn/neural_net.h"
 
+/* sorry for the length and the architecture of this code... */
+/* if anyone want me to reorganize it or want some help, send*/
+/* me a message on Github or at pierrick.made@epita.fr       */
+
 GtkImage *g_image_main;
 gchar *currentImage;
 GtkWidget *image_box;
@@ -114,7 +118,7 @@ int convert()
     size_t img_height = image_surface->h;
 
     Surface_save_image(image_surface, "tmp/original.bmp");
-    
+
     size_t *img_bin_matrix = matrix_from_image_preprocessing(image_surface);
 
     //matrix_print(img_bin_matrix, img_height, img_width);
@@ -165,9 +169,9 @@ int convert()
 
             //is there a space after this char ?
             if (c+1<textLines[i].nbCharacters &&
-                textLines[i].Characters[c+1].LeftBound -
-                textLines[i].Characters[c].RightBound >
-                textLines[i].averageSpaceWidth*1.2)
+                    textLines[i].Characters[c+1].LeftBound -
+                    textLines[i].Characters[c].RightBound >
+                    textLines[i].averageSpaceWidth*1.2)
                 recognized_text = g_strconcat(recognized_text, " ", NULL);
 
             free(textLines[i].Characters[c].matrix);
@@ -179,7 +183,7 @@ int convert()
     free(textLines);
     gchar_to_text_view(g_text_result, recognized_text);
     g_free(recognized_text);
-    
+
     /************************************************************
      *                     Post-processing                       *
      * Possible checking of the words by using a dictionnary or  *
@@ -231,8 +235,8 @@ void on_window_main_size_allocate()
 {
     GtkAllocation allocation;
     gtk_widget_get_allocation(
-        image_box,
-        &allocation);
+            image_box,
+            &allocation);
     int desired_width = allocation.width;
     int desired_height = allocation.height;
     float r_box = (float)desired_height/desired_width;
@@ -251,7 +255,7 @@ void on_window_main_size_allocate()
             desired_width = (int)(desired_height / r_image);
         }
         gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
-            desired_width, desired_height, GDK_INTERP_BILINEAR));
+                    desired_width, desired_height, GDK_INTERP_BILINEAR));
     }
     else if (zoom_largefit)
     {
@@ -266,7 +270,7 @@ void on_window_main_size_allocate()
             desired_width = (int)(desired_height / r_image);
         }
         gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
-            desired_width, desired_height, GDK_INTERP_BILINEAR));
+                    desired_width, desired_height, GDK_INTERP_BILINEAR));
     }
     else if (zoom_normal)
         gtk_image_set_from_pixbuf(g_image_main, pixbuf);
@@ -296,11 +300,11 @@ void on_btn_file_selection_cancel_clicked()
 gboolean file_isimage(gchar *file_path)
 {
     return (
-        g_str_has_suffix(file_path, ".jpg") ||
-        g_str_has_suffix(file_path, ".png") ||
-        g_str_has_suffix(file_path, ".pdf") ||
-        g_str_has_suffix(file_path, ".bmp")
-        );
+            g_str_has_suffix(file_path, ".jpg") ||
+            g_str_has_suffix(file_path, ".png") ||
+            g_str_has_suffix(file_path, ".pdf") ||
+            g_str_has_suffix(file_path, ".bmp")
+           );
 }
 
 void on_btn_file_selection_open_clicked()
@@ -317,8 +321,9 @@ void on_btn_file_selection_open_clicked()
         if (g_str_has_suffix(file_path, ".pdf"))
         {
             int success = system(g_strconcat(
-                "pdftocairo -l 5 -png ", file_path, " tmp/pdf",
-                ";convert -append tmp/pdf-*.png tmp/pdf_view.png", NULL));
+                        "pdftocairo -l 5 -png ", file_path, " tmp/pdf",
+                        ";convert -append tmp/pdf-*.png tmp/pdf_view.png",
+                        NULL));
             if (success != -1)
             {
                 pixbuf = gdk_pixbuf_new_from_file("tmp/pdf_view.png", NULL);
@@ -327,7 +332,7 @@ void on_btn_file_selection_open_clicked()
             else
             {
                 gchar_to_text_view(g_text_result,
-                    "Failed to convert your pdf, sorry for that !\n");
+                        "Failed to convert your pdf, sorry for that !\n");
             }
         }
         else
@@ -477,8 +482,8 @@ void change_image_preview(gchar *imagePath)
     GdkPixbuf *pixbuf_show = gdk_pixbuf_new_from_file(imagePath, NULL);
     GtkAllocation allocation;
     gtk_widget_get_allocation(
-        show_steps_image_box,
-        &allocation);
+            show_steps_image_box,
+            &allocation);
     int desired_width = allocation.width;
     int desired_height = allocation.height;
     float r_box = (float)desired_height/desired_width;
@@ -496,8 +501,8 @@ void change_image_preview(gchar *imagePath)
         desired_width = (int)(desired_height / r_image);
     }
     gtk_image_set_from_pixbuf(image_show_steps,
-        gdk_pixbuf_scale_simple(pixbuf_show,
-            desired_width, desired_height, GDK_INTERP_BILINEAR));
+            gdk_pixbuf_scale_simple(pixbuf_show,
+                desired_width, desired_height, GDK_INTERP_BILINEAR));
     gtk_widget_queue_resize(window_show);
 }
 
@@ -572,8 +577,8 @@ void on_cb_show_segmentation_toggled()
 }
 void on_rb_spell_check_toggled()
 {
-   isactive_spell_check_en = gtk_toggle_button_get_active(rb_spell_check_en);
-   isactive_spell_check_fr = gtk_toggle_button_get_active(rb_spell_check_fr);
+    isactive_spell_check_en = gtk_toggle_button_get_active(rb_spell_check_en);
+    isactive_spell_check_fr = gtk_toggle_button_get_active(rb_spell_check_fr);
 }
 
 //-----------------------------------------------------------------------------
@@ -623,7 +628,7 @@ void on_btn_convert_clicked()
     }
     else
         gchar_to_text_view(g_text_result,
-            "You need to select an Image to convert it !\n");
+                "You need to select an Image to convert it !\n");
 }
 
 void on_btn_text_save_clicked()
@@ -697,7 +702,7 @@ void on_menu_view_zoom_in_activate()
     int desired_width =  gdk_pixbuf_get_width(current) + 40;
     int desired_height = (int)(desired_width * r_image);
     gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
-        desired_width, desired_height, GDK_INTERP_BILINEAR));
+                desired_width, desired_height, GDK_INTERP_BILINEAR));
 
     gtk_widget_queue_resize(window_main);
 }
@@ -716,7 +721,7 @@ void on_menu_view_zoom_out_activate()
         desired_width += 40;
     int desired_height = (int)(desired_width * r_image);
     gtk_image_set_from_pixbuf(g_image_main, gdk_pixbuf_scale_simple(pixbuf,
-        desired_width, desired_height, GDK_INTERP_BILINEAR));
+                desired_width, desired_height, GDK_INTERP_BILINEAR));
 
     gtk_widget_queue_resize(window_main);
 }
@@ -725,7 +730,7 @@ void on_menu_tools_deskew_activate()
 {
     //TODO
     gchar_to_text_view(g_text_result,
-        "De-skew tool! (not implemented yet ...)\n");
+            "De-skew tool! (not implemented yet ...)\n");
 }
 
 void on_menu_tools_spellchecker_activate()
@@ -746,7 +751,7 @@ void on_menu_help_help_activate()
 {
     int opened_url =
         g_app_info_launch_default_for_uri(
-            "http://github.com/4pm-nomnom/OCR", NULL, NULL);
+                "http://github.com/4pm-nomnom/OCR", NULL, NULL);
     if (!opened_url)
     {
         printf("failed to open the help page... open it directly :\n");
@@ -760,7 +765,7 @@ void on_menu_help_about_activate()
 }
 
 gboolean on_image_main_key_press_event(GtkWidget *widget, GdkEventKey *event,
-    gpointer data)
+        gpointer data)
 {
     (void)widget;
     (void)data;

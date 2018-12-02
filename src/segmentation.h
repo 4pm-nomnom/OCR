@@ -33,8 +33,8 @@ typedef struct
 }TextBlock;
 
 size_t TextLines_find(TextLine textLines[],
-                            size_t binarized_image[],
-                            size_t height, size_t width);
+        size_t binarized_image[],
+        size_t height, size_t width);
 
 void TextLines_show(TextLine textLines[], size_t nbTextLines);
 
@@ -47,26 +47,27 @@ void get_characters(TextLine *textLine,
         size_t img_width, size_t img_height);
 
 void Surface_draw_vline(SDL_Surface *image_surface, size_t numCol,
-                        size_t upperBound, size_t lowerBound);
+        size_t upperBound, size_t lowerBound);
 
 void Surface_draw_hline(SDL_Surface *image_surface, size_t numLine);
 
 void Surface_draw_textLines(SDL_Surface *image_surface,
-                            TextLine textLines[], size_t nbTextLines);
+        TextLine textLines[], size_t nbTextLines);
 
 //return a cropped matrix of the main one
 //the user is responsible of freeing it
 size_t *matrix_crop(size_t matrix[], size_t matrix_height, size_t matrix_width,
-    size_t upperBound, size_t leftBound, size_t cropped_height, size_t cropped_width);
+        size_t upperBound, size_t leftBound,
+        size_t cropped_height, size_t cropped_width);
 
 size_t* normalize(size_t matrix[], size_t height, size_t width);
 
 void matrix_print(size_t matrix[], size_t height, size_t width);
 
 /*
-void Surface_draw_rlsa(SDL_Surface *image_surface, ...)
-void
+   void Surface_draw_rlsa(SDL_Surface *image_surface, ...)
+   void
 
-*/
+ */
 
 #endif

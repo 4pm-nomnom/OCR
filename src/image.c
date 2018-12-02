@@ -66,7 +66,7 @@ void wait_for_keypressed()
     } while(event.type != SDL_KEYUP);
 }
 
-static inline
+    static inline
 Uint8* pixel_ref(SDL_Surface *surf, unsigned x, unsigned y)
 {
     int bpp = surf->format->BytesPerPixel;
@@ -153,14 +153,14 @@ SDL_Surface *ScaleSurface(SDL_Surface *surface, size_t width, size_t height)
         return 0;
 
     SDL_Surface *_ret = SDL_CreateRGBSurface(surface->flags, width, height,
-        surface->format->BitsPerPixel, surface->format->Rmask,
-        surface->format->Gmask, surface->format->Bmask,
-        surface->format->Amask);
+            surface->format->BitsPerPixel, surface->format->Rmask,
+            surface->format->Gmask, surface->format->Bmask,
+            surface->format->Amask);
 
     double _stretch_factor_x = ((double)width  /
-                                (double)(surface->w));
+            (double)(surface->w));
     double _stretch_factor_y = ((double)height /
-                                (double)(surface->h));
+            (double)(surface->h));
 
     for(Sint32 y = 0; y < surface->h; y++)
         for(Sint32 x = 0; x < surface->w; x++)
@@ -168,9 +168,9 @@ SDL_Surface *ScaleSurface(SDL_Surface *surface, size_t width, size_t height)
                 for(Sint32 o_x = 0; o_x < _stretch_factor_x; ++o_x)
                 {
                     put_pixel(_ret,
-                        (Sint32)(_stretch_factor_x * x) + o_x,
-                        (Sint32)(_stretch_factor_y * y) + o_y,
-                        get_pixel(surface, x, y));
+                            (Sint32)(_stretch_factor_x * x) + o_x,
+                            (Sint32)(_stretch_factor_y * y) + o_y,
+                            get_pixel(surface, x, y));
                 }
 
     return _ret;

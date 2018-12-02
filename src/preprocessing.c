@@ -86,9 +86,9 @@ void binarize(SDL_Surface *image_surface, size_t threshold)
             SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
             size_t graylevel = r;
             if (graylevel < threshold)
-                { r = 0; g = 0; b = 0; }
+            { r = 0; g = 0; b = 0; }
             else
-                { r = 255; g = 255; b=255; }
+            { r = 255; g = 255; b=255; }
             pixel = SDL_MapRGB(image_surface->format, r, g, b);
             put_pixel(image_surface, x, y, pixel);
         }
@@ -123,9 +123,9 @@ void binarize_text_as_black(SDL_Surface *image_surface)
                 SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
                 size_t color = r;
                 if (color == 255)
-                    { r = 0; g = 0; b = 0; }
+                { r = 0; g = 0; b = 0; }
                 else
-                    { r = 255; g = 255; b=255; }
+                { r = 255; g = 255; b=255; }
                 pixel = SDL_MapRGB(image_surface->format, r, g, b);
                 put_pixel(image_surface, x, y, pixel);
             }
@@ -156,12 +156,12 @@ size_t *matrix_from_image_preprocessing(SDL_Surface *image_surface)
 
     //--- grayscale ---------------------------------------------
     grayscale(image_surface);
-    
+
     Surface_save_image(image_surface, "tmp/grayscale.bmp");
 
     //--- Binarization ------------------------------------------
     binarize(image_surface, otsu_threshold(image_surface));
-    
+
     //--- Reverse Binarization if text is white -----------------
     binarize_text_as_black(image_surface);
 

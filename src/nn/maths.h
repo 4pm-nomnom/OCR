@@ -17,6 +17,7 @@ double delta(double target, double input, double output);
 
 double error_hidden_prev(double target, double output);
 
-double error_hidden(double target, double output, double output_n, double weight, double input);
+double error_hidden(double target, double output, double output_n,
+        double weight, double input);
 
-#endif 
+#endif
