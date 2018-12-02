@@ -3,7 +3,7 @@
 TARGET = ocr
 
 # Compiler and Linker
-CC = gcc -fsanitize=address
+CC = gcc
 # Main compilation options
 CFLAGS = -Wall -Wextra -Werror -std=c99 -O3
 # Linker options
