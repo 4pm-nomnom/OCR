@@ -141,7 +141,7 @@ void update_surface(SDL_Surface* screen, SDL_Surface* image)
     SDL_UpdateRect(screen, 0, 0, image->w, image->h);
 }
 
-void Save_image(SDL_Surface* image, char* name)
+void Surface_save_image(SDL_Surface* image, char* name)
 {
     if((SDL_SaveBMP(image, name)) != 0)
         exit(EXIT_FAILURE);

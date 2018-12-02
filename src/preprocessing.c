@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "image.h"
+#include "image.h" //already have SDL
 
 
 void grayscale(SDL_Surface *image_surface)
@@ -133,49 +133,53 @@ void binarize_text_as_black(SDL_Surface *image_surface)
     }
 }
 
-/*
-int main()
+void bin_matrix_from_surface(size_t *bin_matrix, SDL_Surface *image_surface)
 {
-    //--- SDL initialisation ------------------------------------
-    SDL_Surface* image_surface;
-    SDL_Surface* screen_surface;
-    init_sdl();
+    size_t img_width = image_surface->w;
+    size_t img_height = image_surface->h;
+    for(size_t y=0; y<img_height; y++)
+    {
+        for(size_t x=0; x<img_width; x++)
+        {
+            Uint32 pixel = get_pixel(image_surface, x, y);
+            Uint8 r, g, b;
+            SDL_GetRGB(pixel,image_surface->format, &r, &g, &b);
+            bin_matrix[y*img_width+x] = (r==0)?1:0;
+        }
+    }
+}
 
-    //--- Load image --------------------------------------------
-    char img_path[] = "samples/light_on_orange.png";
-    image_surface = load_image(img_path);
+size_t *matrix_from_image_preprocessing(SDL_Surface *image_surface)
+{
+    size_t img_width = image_surface->w;
+    size_t img_height = image_surface->h;
 
-    size_t img_width = image_surface->w ;
-    size_t img_height = image_surface->h ;
-    printf("[%s] was loaded\n", img_path);
-    printf("width = %zu // height = %zu\n", img_width, img_height);
-
-
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-
+    //--- grayscale ---------------------------------------------
     grayscale(image_surface);
+    
+    Surface_save_image(image_surface, "tmp/grayscale.bmp");
 
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-
-    size_t otsuThreshold = otsu_threshold(image_surface);
-    printf("otsu : %zu\n",otsuThreshold);
-    binarize(image_surface, otsuThreshold);
-
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-
+    //--- Binarization ------------------------------------------
+    binarize(image_surface, otsu_threshold(image_surface));
+    
+    //--- Reverse Binarization if text is white -----------------
     binarize_text_as_black(image_surface);
 
-    update_surface(screen_surface, image_surface);
-    screen_surface = display_image(image_surface);
-    wait_for_keypressed();
-    //--- Free memory -------------------------------------------
-    SDL_FreeSurface(image_surface);
-    SDL_FreeSurface(screen_surface);
+    Surface_save_image(image_surface, "tmp/binarized.bmp");
 
-    return 0;
-}*/
+    //--- rotate the image if needed (De-skew) ------------------
+    // automatic_rotation(img_matrix);
+
+    //--- remove positive and negative spots (Despeckle) --------
+    // noise_reduction(img_matrix);
+
+    //--- line removal - cleans up non-glyph lines/boxes --------
+    // lines_removal(img_matrix);
+
+
+    //--- bin-matrix creation -----------------------------------
+    size_t *img_bin_matrix = malloc(sizeof(size_t)*img_height*img_width);
+    bin_matrix_from_surface(img_bin_matrix, image_surface);
+
+    return img_bin_matrix;
+}
