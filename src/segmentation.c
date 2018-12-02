@@ -119,6 +119,7 @@ void get_characters(TextLine *textLine,
 
         currentChar->matrix = normalize(cropped, new_height, new_width);
         matrix_print(currentChar->matrix, WANTED_SIZE, WANTED_SIZE);
+        free(cropped);
     }
 }
 
