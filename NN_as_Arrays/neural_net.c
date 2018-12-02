@@ -11,7 +11,6 @@ void feedforward_layer(double* input, double** layer, size_t nbNeurones, double*
 	for (size_t i = 0; i < nbNeurones; ++i)
 	{
 	inputs[i] = sigmoid(sum_weights(input, layer[i], nbweights[i]));
-//		printf("input = %f\n",inputs[i]);
 	}
 }
 
@@ -22,7 +21,6 @@ void feedforward(double*** network, double** inputs, double* output)
 	for(i = 0; i < nblayer - 1; ++i)
 	{
 		feedforward_layer(inputs[i], network[i], nbneurones[i], inputs[i+1]);
-//		printf("inputs[%lu] = %f\n", i+1, inputs[i+1]);
 	}
 	feedforward_layer(inputs[i], network[i], nbneurones[i], output);
 }
@@ -34,7 +32,6 @@ double backprop_node_out(double target, double output, double* inputs, size_t nb
 	for (size_t i = 0; i < nbWeight; ++i)
 	{
 		error_out += delta(target, output, inputs[i]);
-	//	printf("error out = %f\n", error_out);
 	}
 	return error_out;
 }
@@ -53,12 +50,8 @@ double backprop_node(double* node, double* target, double* out, double output, d
 	for (size_t i = 0; i < nbWeights; ++i)
 		for (size_t j = 0; j < nbneurones[i - 1] ;++j)
 			{
-//				printf("backprop_node: \nTarget = %f, output = %f\nout[%ld] is %f\n ", target[0], output, j, out[j]);
-//				printf("i is %ld j is %ld\n", i, j);
 				error += error_hidden(target[0], output, out[i], node[j], inputs[j]);
-//				printf("Error = %f\n",  error);
 			}
-	printf("\n\n\n");
 	return error; 
 }
 
@@ -67,11 +60,8 @@ void backprop_layerH(double** layer, double* targets, double* output, double* ou
 {
 	for (size_t i = 0; i < nbNodes - 1; ++i)
 	{
-//			printf("backprop_layer: \ni is %ld    output is %f \n", i, out[i]);
 		errors[i] = backprop_node(layer[i+1], targets, output, out[i], in, nbweights[i]);
-//		printf("error[i] = %f\n", errors[i]);
 	}
-	printf("\n");
 }
 
 void correct(double*** network, double** error)
@@ -79,13 +69,10 @@ void correct(double*** network, double** error)
 	for (size_t i = 0; i < 2; ++i)
 		for (size_t j = 0; j < nbneurones[i]; ++j)
 		{
-//			printf("error[%ld][%ld] = %f\n", i, j, error[i][j]);
 			for (size_t k = 0; k < nbweights[i]; ++k)
 				{
 					network[i][j][k] -= eta * error[i][j];
-//					printf("new weight[%ld][%ld][%ld = %f\n",i,j,k, network[i][j][k]);
 				}
-		printf("\n");
 		}
 }
 
@@ -97,7 +84,6 @@ void backprop(double*** network, double* outputs, double* target, double** input
 	errors[0] = malloc(sizeof(double) * 2);
 	errors[1] = malloc(sizeof(double));
 	int i = 1;
-//	printf("coucou");
 	backprop_layer_out(inputs[1], outputs, errors[i], target, nbneurones[i]);
 	--i;
 	for (; i >= 0; --i)
@@ -109,19 +95,16 @@ void backprop(double*** network, double* outputs, double* target, double** input
 
 void epoch(double*** network, double* input, double* expected)
 {
-	//printf("coucou");
 	double **inputs;
 	inputs = malloc(2 * sizeof(double*));
 	inputs[0] = malloc(sizeof(double) * 2);
 	inputs[0] = input;
 	inputs[1] = malloc(sizeof(double) * 2);
-	//printf("Input allocated");
 	double* output;
 	output = malloc(sizeof(double));
 	feedforward(network, inputs, output);
-	//printf("Input[x] = %f\n", input[1][0]);
 	backprop(network, output, expected, inputs);
-	printf("Output = %f\n", output[0]);
+//	printf("Output = %f\n", output[0]);
 }
 
 void Train(double*** network)
@@ -131,28 +114,30 @@ void Train(double*** network)
 				size_t i = rand() % 4;
 				double* input = malloc(sizeof(double) * 2);
 				input = _input[i];
-				printf("\nInput 1 = %f, Input 2 = %f\n", input[0], input[1]);
+//				printf("\nInput 1 = %f, Input 2 = %f\n", input[0], input[1]);
 				double* expected = malloc(sizeof(double));
 				expected[0] = (double) (i%2) ;
-//				printf("Expected = %f\n", expected[0]);
 				epoch(network, input, expected);
-//				input = _input[0];
 		}
-//		size_t i = rand() % 4;
-//		double* input = malloc(sizeof(double) * 2);
-//		input = _input[i];
-//		printf("\nInput 1 = %f, Input 2 = %f\n", input[0], input[1]);
-//		double* expected = malloc(sizeof(double));
-//		expected[0] = (double) (i % 2);
-//		epoch(network, input, expected);
+}
+
+void print_network(double*** network, size_t i)
+{
+	for (size_t _i = 0; _i < i; ++_i)
+	{
+		printf("Weights in layer %lu :\n", _i);
+		for (size_t _j = 0; _j < nbneurones[_i]; ++_j)
+		{
+			for (size_t _k = 0; _k < nbweights[_j]; _k++ )
+				printf("| %f ", network[_i][_j][_k]);
+			printf("|\n");
+		}
+	}
 }
 
 
-int main()
+void Neural_network()
 {
-		//      double *input = malloc(sizeof(double) * 2);
-		//      input[0] = (double) 1;
-		//      input[1] = (double) 1;
 		srand(time(NULL));
 		double ***network;
 		network = malloc(2*sizeof(double**));
@@ -163,14 +148,13 @@ int main()
 		network[1][0] = malloc(sizeof(double) * 3);
 		fill_array_random(network[0], 2, 3);
 		fill_array_random(network[1], 1, 3);
+		print_network(network, nblayer);
 		Train(network);
-		//      double* expected = malloc(sizeof(double));
-		//      expected[0] = 0;
-		//for (size_t i = 0; i < 5000; ++i)
-		//      epoch(network, input, expected);
-		//input[0] = 0;
-		//input[1] = 1;
-		//expected[0] = 1;
-		//epoch(network, input, expected);
-		return 0;
+		print_network(network, nblayer);
+}
+
+int main()
+{
+	Neural_network();
+	return 0;
 }

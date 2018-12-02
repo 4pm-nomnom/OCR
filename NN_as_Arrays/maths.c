@@ -32,7 +32,6 @@ double total_error(double* outputs, double* inputs, size_t nbOutputs)
 
 double derrivative_Error_output(double target, double output)
 {
-//	printf("derrivate: \ntarget is %f\n, output is%f\n", target, output);
 	return output - target; 
 }
 
@@ -48,18 +47,11 @@ double delta(double target, double output, double input)
 
 double error_hidden_prev(double target, double output, double weight)
 {
-//		printf("prev\noutput is %f\nderrivative_error is %f \n", output, derrivative_Error_output(target, output));
-//		printf("derrivative_output is %f is \n", derrivative_outpout(output));
-//		printf("weight is %f \n\n", weight);
 	return derrivative_Error_output(target, output) * derrivative_outpout(output) * weight;
 }
 
 double error_hidden(double target, double output, double output_n, double weight, double input)
 {
-//		printf("error_hidden: input is %f \n", input);
-
-//		printf("error_hidden: \nderrivative is  %f \n", derrivative_outpout(output_n));
-//		printf("error_prev is: %f\n", error_hidden_prev(target, output, weight));
 	return error_hidden_prev(target, output, weight) * derrivative_outpout(output_n); //* input;
 }
 
