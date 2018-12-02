@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
             img_bin_matrix[y*img_width+x] = (r==0)?1:0;
         }
     }
-    
+
     matrix_print(img_bin_matrix, img_height, img_width);
 
     normalize(img_bin_matrix, result, img_height, img_width);

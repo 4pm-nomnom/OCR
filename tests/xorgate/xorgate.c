@@ -131,25 +131,25 @@ float operrorh1(InputLayer I, HiddenLayer H, float x1, float x2, int coord)
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
     float res = 0;
-	if (coord == 1)
-	{	// litteraly the derivative according to the bias component;
-   		 float w1 = I.Node1.weight2;
-  		 float w2 = I.Node2.weight2;
-  		 float output =  (-1.0f) * (x1* w1 + x2 * w2);
-         res = 1/ (1 + exp(output));	
-	}
-	if (coord == 2)
-	{
-		a = ffnode1(I, H, x1, 0);	
+    if (coord == 1)
+    {	// litteraly the derivative according to the bias component;
+        float w1 = I.Node1.weight2;
+        float w2 = I.Node2.weight2;
+        float output =  (-1.0f) * (x1* w1 + x2 * w2);
+        res = 1/ (1 + exp(output));
+    }
+    if (coord == 2)
+    {
+        a = ffnode1(I, H, x1, 0);
 
-	}
-	if (coord == 3)
-	{
-		a = ffnode1(I, H, 0, x2);	
+    }
+    if (coord == 3)
+    {
+        a = ffnode1(I, H, 0, x2);
 
-	}
-	res = ((-1.0f) * (yx + a) * out);
-	
+    }
+    res = ((-1.0f) * (yx + a) * out);
+
     if (x1 == x2 && x2!=0.0f)
     {
         res = (-1.0f) * res;
@@ -174,32 +174,32 @@ float operrorh2(InputLayer I, HiddenLayer H, float x1, float x2, int coord)
     float sigmoid = 1/(1 + exp(output));
     //sigmoid' = output - outputpower2
     float out = sigmoid * (1 - sigmoid);
-	float res;
+    float res;
     //custom output value, valid in this specific case
     //couldnt handle the case were x1 and x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
-	if (coord == 1)
-	{	// litteraly the derivative according to the bias component;
-		//ffnode2 but bias =0;
-   		 float w1 = I.Node1.weight2;
-   		 float w2 = I.Node2.weight2;
-   		 
-   		 float output =  (-1.0f) * (x1* w1 + x2 * w2);
-         res = 1/ (1 + exp(output));	
-	}
-	if (coord == 2)
-	{
-		a = ffnode1(I, H, x1, 0);	
+    if (coord == 1)
+    {	// litteraly the derivative according to the bias component;
+        //ffnode2 but bias =0;
+        float w1 = I.Node1.weight2;
+        float w2 = I.Node2.weight2;
 
-	}
-	if (coord == 3)
-	{
-		a = ffnode1(I, H, 0, x2);	
+        float output =  (-1.0f) * (x1* w1 + x2 * w2);
+        res = 1/ (1 + exp(output));
+    }
+    if (coord == 2)
+    {
+        a = ffnode1(I, H, x1, 0);
 
-	}
-	res = ((-1.0f) * (yx + a) * out);
-	
+    }
+    if (coord == 3)
+    {
+        a = ffnode1(I, H, 0, x2);
+
+    }
+    res = ((-1.0f) * (yx + a) * out);
+
     if (x1 == x2 && x2!=0.0f)
     {
         res = (-1.0f) * res;
@@ -223,39 +223,39 @@ float operroro(HiddenLayer H, OutputLayer O, float x1, float x2, int coord)
     float sigmoid = 1/(1 + exp(output));
     //sigmoid' = output - outputpower2
     float out = sigmoid * (1 - sigmoid);
-	float res;
+    float res;
     //custom output value, valid in this specific case
     //couldnt handle the case were x1 and x2
     //were greater than zero without using
     //some vectors and arrays. Thus, for the moment I cover it separately
-	if (coord == 1)
-	{	// litteraly the derivative according to the bias component;
-  		  float w1 = H.Node1.weight;
-  		  float x1 = H.Node1.value;
- 		  float w2 = H.Node2.weight;
-		  float x2 = H.Node2.value;
- 		  float output =  (-1.0f) * (x1* w1 + x2 * w2);
-  		  res= 1/ (1 + exp(output));		
-	}
-	if (coord == 2)
-	{
-  		  float w2 = H.Node2.weight;
-		  float x2 = H.Node2.weight;
-  		  float bias = O.bias;
- 		  float output =  (-1.0f) * ( x2 * w2 + bias);
-  		  res= 1/ (1 + exp(output));		
-	}
-	if (coord == 3)
-	{
-  		  float w1 = H.Node1.weight;
-		  float x1 = H.Node1.weight;
-  		  float bias = O.bias;
- 		  float output =  (-1.0f) * ( x1 * w1 + bias);
-  		  res= 1/ (1 + exp(output));		
-		
-	}
-	res = ((-1.0f) * (yx + a) * out);
-	
+    if (coord == 1)
+    {	// litteraly the derivative according to the bias component;
+        float w1 = H.Node1.weight;
+        float x1 = H.Node1.value;
+        float w2 = H.Node2.weight;
+        float x2 = H.Node2.value;
+        float output =  (-1.0f) * (x1* w1 + x2 * w2);
+        res= 1/ (1 + exp(output));
+    }
+    if (coord == 2)
+    {
+        float w2 = H.Node2.weight;
+        float x2 = H.Node2.weight;
+        float bias = O.bias;
+        float output =  (-1.0f) * ( x2 * w2 + bias);
+        res= 1/ (1 + exp(output));
+    }
+    if (coord == 3)
+    {
+        float w1 = H.Node1.weight;
+        float x1 = H.Node1.weight;
+        float bias = O.bias;
+        float output =  (-1.0f) * ( x1 * w1 + bias);
+        res= 1/ (1 + exp(output));
+
+    }
+    res = ((-1.0f) * (yx + a) * out);
+
     if (x1 == x2 && x2!=0.0f)
     {
         res = (-1.0f) * res;

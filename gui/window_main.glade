@@ -1237,8 +1237,7 @@ Victor DUTTO</property>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Recognizing the document 
-please wait ...</property>
+                    <property name="label" translatable="yes">Recognizing the document please wait ...</property>
                     <property name="justify">center</property>
                   </object>
                   <packing>

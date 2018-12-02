@@ -16,7 +16,7 @@ LM = -lm
 
 SRC = $(shell find src -type f -name "*.c")
 
-all: $(TARGET) tmpdir 
+all: $(TARGET) tmpdir
 
 ocr: $(SRC)
 	$(CC) -o $@ $(SRC) $(CFLAGS) $(LDFLAGS) $(SDL) $(GTK) $(GSPELL) $(LM)

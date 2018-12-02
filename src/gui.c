@@ -164,7 +164,7 @@ int convert()
         {
             //size_t *char_matrix = textLines[i].Characters[c].matrix;
             // char result_char = nn_character_recognition(char_matrix);
-            gchar *result_char = "a";
+            gchar *result_char = "-";
             recognized_text = g_strconcat(recognized_text, result_char, NULL);
 
             //is there a space after this char ?
