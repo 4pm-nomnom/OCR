@@ -197,7 +197,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_tools_neural_network">
-                        <property name="label">Neural Network Preferences</property>
+                        <property name="label">Neural Network Overview</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
