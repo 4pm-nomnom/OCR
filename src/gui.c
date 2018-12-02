@@ -10,6 +10,7 @@
 #include "image.h"
 #include "preprocessing.h"
 #include "segmentation.h"
+#include "nn/neural_net.h"
 
 #define MAX_NUMBER_OF_LINES 100
 #define MAX_NUMBER_OF_CHARACTERS 200
@@ -708,8 +709,8 @@ void on_menu_tools_spellchecker_activate()
 
 void on_menu_tools_neural_network_activate()
 {
-    //TODO
-    gchar_to_text_view(g_text_result, "Neural-network preferences!\n(not implemented yet ...)\n");
+    Neural_network();
+    gchar_to_text_view(g_text_result, "Neural-network overview!\n");
 }
 
 void on_menu_help_help_activate()

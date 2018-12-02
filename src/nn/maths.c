@@ -52,6 +52,7 @@ double error_hidden_prev(double target, double output, double weight)
 
 double error_hidden(double target, double output, double output_n, double weight, double input)
 {
+        (void)input;
 	return error_hidden_prev(target, output, weight) * derrivative_outpout(output_n); //* input;
 }
 
