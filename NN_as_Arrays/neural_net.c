@@ -34,7 +34,7 @@ double backprop_node_out(double target, double output, double* inputs, size_t nb
 	for (size_t i = 0; i < nbWeight; ++i)
 	{
 		error_out += delta(target, output, inputs[i]);
-//		printf("error out = %f\n", error_out);
+	//	printf("error out = %f\n", error_out);
 	}
 	return error_out;
 }
@@ -51,25 +51,27 @@ double backprop_node(double* node, double* target, double* out, double output, d
 {
 	double error = 0;
 	for (size_t i = 0; i < nbWeights; ++i)
-		for (size_t j = 0; j < 2; ++j)
+		for (size_t j = 0; j < nbneurones[i - 1] ;++j)
 			{
-		//		printf("backprop_node: \nTarget = %f, output = %f\n", target[0], output);
-				error += error_hidden(target[i], out[j], output, node[i], inputs[j]);
+//				printf("backprop_node: \nTarget = %f, output = %f\nout[%ld] is %f\n ", target[0], output, j, out[j]);
+//				printf("i is %ld j is %ld\n", i, j);
+				error += error_hidden(target[0], output, out[i], node[j], inputs[j]);
 //				printf("Error = %f\n",  error);
 			}
-//	printf("\n\n\n");
+	printf("\n\n\n");
 	return error; 
 }
 
 
 void backprop_layerH(double** layer, double* targets, double* output, double* out, double* in, double* errors, size_t nbNodes)
 {
-	for (size_t i = 0; i < nbNodes; ++i)
+	for (size_t i = 0; i < nbNodes - 1; ++i)
 	{
-		//	printf("backprop_layer: \ni is %ld    output is %f \n", i, out[i]);
-		errors[i] = backprop_node(layer[i], targets, output, out[i], in, nbweights[i]);
+//			printf("backprop_layer: \ni is %ld    output is %f \n", i, out[i]);
+		errors[i] = backprop_node(layer[i+1], targets, output, out[i], in, nbweights[i]);
 //		printf("error[i] = %f\n", errors[i]);
 	}
+	printf("\n");
 }
 
 void correct(double*** network, double** error)
@@ -77,13 +79,13 @@ void correct(double*** network, double** error)
 	for (size_t i = 0; i < 2; ++i)
 		for (size_t j = 0; j < nbneurones[i]; ++j)
 		{
-			printf("error[%ld][%ld] = %f\n", i, j, error[i][j]);
+//			printf("error[%ld][%ld] = %f\n", i, j, error[i][j]);
 			for (size_t k = 0; k < nbweights[i]; ++k)
 				{
 					network[i][j][k] -= eta * error[i][j];
-					printf("new weight[%ld][%ld][%ld = %f\n",i,j,k, network[i][j][k]);
+//					printf("new weight[%ld][%ld][%ld = %f\n",i,j,k, network[i][j][k]);
 				}
-	//	printf("\n");
+		printf("\n");
 		}
 }
 
@@ -124,7 +126,7 @@ void epoch(double*** network, double* input, double* expected)
 
 void Train(double*** network)
 {
-		for (size_t j = 0; j < 50; ++j)
+		for (size_t j = 0; j < 5000; ++j)
 		{
 				size_t i = rand() % 4;
 				double* input = malloc(sizeof(double) * 2);
@@ -134,7 +136,7 @@ void Train(double*** network)
 				expected[0] = (double) (i%2) ;
 //				printf("Expected = %f\n", expected[0]);
 				epoch(network, input, expected);
-				input = _input[0];
+//				input = _input[0];
 		}
 //		size_t i = rand() % 4;
 //		double* input = malloc(sizeof(double) * 2);
